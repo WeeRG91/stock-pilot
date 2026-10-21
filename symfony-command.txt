@@ -1,0 +1,21 @@
+winget search symfony --source winget
+
+Add Symfony to your user PATH
+- Search Windows Start for Edit environment variables for your account.
+- Under User variables for ACER, select Path → Edit.
+
+$symfonyFolder = "$env:USERPROFILE\Tools\Symfony"
+$userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
+
+if (($userPath -split ';') -notcontains $symfonyFolder) {
+    [Environment]::SetEnvironmentVariable(
+        'Path',
+        "$userPath;$symfonyFolder",
+        'User'
+    )
+}
+The saved change does not automatically update an already running terminal. This additional command updates the current PowerShell session:
+$env:Path += ";$symfonyFolder"
+
+create Symfony project 
+symfony new backend --version="7.4.*" --no-git
