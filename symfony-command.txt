@@ -19,3 +19,19 @@ $env:Path += ";$symfonyFolder"
 
 create Symfony project 
 symfony new backend --version="7.4.*" --no-git
+
+Set-Location C:\Sites\stock-pilot-symfony
+git rev-parse --show-toplevel
+
+Get-ChildItem -Force
+Get-Content .\backend\.gitignore
+git init -b main
+git rev-parse --show-toplevel
+git status --short --untracked-files=all
+git check-ignore -v -- backend/vendor/autoload.php backend/var/cache/dev backend/.env.local
+
+Validate Composer configuration
+composer validate --strict
+
+php bin/console lint:yaml config
+php bin/console lint:container
