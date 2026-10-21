@@ -1,4 +1,6 @@
 {
+    "name": "stockpilot/backend",
+    "description": "Symfony REST API for the StockPilot inventory management learning project",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
