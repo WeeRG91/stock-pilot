@@ -545,3 +545,36 @@ Executed by the learner; outputs reviewed in chat:
 - Listing remains unpaginated.
 - Repository query verification remains manual.
 - Database integration tests and earlier limitations remain deferred.
+
+## Task 19 — Product List Pagination
+
+### Completed
+
+- Added database offset and limit to product listing.
+- Validated page and limit query parameters.
+- Defaulted to page 1 and limit 20; capped limit at 100.
+- Guarded against integer overflow in offset calculation.
+- Added filtered totals and pagination metadata.
+- Documented the repository's structured return type with PHPDoc.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- Syntax and container checks passed.
+- Pages 1 and 2 with limit 1 returned distinct products.
+- Out-of-range page returned empty data with preserved totals.
+- Search results produced matching filtered totals.
+- Unmatched search returned total 0 and totalPages 0.
+- Invalid ranges, decimal pages, and array pages returned JSON 400.
+- Existing backend suite passed: 9 tests, 25 assertions.
+- Mapping is valid and database schema remains synchronized.
+
+### Decisions and limitations
+
+- Results remain ordered by ascending ID.
+- Count and page retrieval use separate queries.
+- Concurrent changes may affect consistency between queries or pages.
+- Large offsets can become expensive.
+- Pagination verification remains manual; database tests are deferred.
+- Earlier API and dependency limitations remain open.

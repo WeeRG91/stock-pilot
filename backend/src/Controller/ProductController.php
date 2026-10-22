@@ -51,11 +51,52 @@ final class ProductController
             $active = $activeValue === 'true';
         }
 
-        $products = $this->productRepository->findForListing($search, $active);
+        $pageValue = $query['page'] ?? '1';
+        $limitValue = $query['limit'] ?? '20';
+
+        if (!is_string($pageValue) || !is_string($limitValue)) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Page and limit must be integer strings.']],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $page = filter_var(
+            $pageValue,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]],
+        );
+
+        $limit = filter_var(
+            $limitValue,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1, 'max_range' => 100]],
+        );
+
+        if ($page === false || $limit === false) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Page must be positive and limit must be between 1 and 100.']],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        if ($page - 1 > intdiv(PHP_INT_MAX, $limit)) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Requested page is too large.']],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $result = $this->productRepository->findForListing(
+            $search,
+            $active,
+            $page,
+            $limit,
+        );
 
         $data = [];
 
-        foreach ($products as $product) {
+        foreach ($result['items'] as $product) {
             $data[] = [
                 'id' => $product->getId(),
                 'name' => $product->getName(),
@@ -64,7 +105,15 @@ final class ProductController
             ];
         }
 
-        return new JsonResponse(['data' => $data]);
+        return new JsonResponse([
+            'data' => $data,
+            'meta' => [
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $result['total'],
+                'totalPages' => (int) ceil($result['total'] / $limit),
+            ],
+        ]);
     }
 
     #[Route(
