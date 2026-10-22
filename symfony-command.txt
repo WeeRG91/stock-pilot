@@ -29,6 +29,7 @@ git init -b main
 git rev-parse --show-toplevel
 git status --short --untracked-files=all
 git check-ignore -v -- backend/vendor/autoload.php backend/var/cache/dev backend/.env.local
+git log -1 --oneline
 
 Validate Composer configuration
 composer validate --strict
@@ -39,3 +40,6 @@ php bin/console lint:container
 PHPUnit will execute the test
 composer require --dev symfony/test-pack
 php bin/phpunit tests/Controller/HealthControllerTest.php
+
+php bin/console cache:clear --env=dev
+git diff -- config/reference.php

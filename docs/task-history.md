@@ -68,3 +68,26 @@ Executed by the learner and reviewed in chat:
 - The functional test uses Symfony's kernel without a running server.
 - The endpoint confirms application responsiveness only.
 - Database and external-service health are not checked.
+
+## Task 03 — Services & Dependency Injection
+
+### Completed
+
+- Inspected service discovery, autowiring, and autoconfiguration.
+- Injected LoggerInterface into HealthController through its constructor.
+- Used the injected logger in the health action.
+- Inspected the concrete logger service and container arguments.
+
+### Verification
+
+- PHP syntax and container lint passed before adding the logging call.
+- Full functional suite passed after adding the call: 1 test, 4 assertions.
+- Controller implementation reviewed directly by the assistant.
+- Logging output and destination were not verified.
+
+### Decisions
+
+- Used Symfony's existing logger without additional dependencies.
+- Constructor injection makes the controller's dependency explicit.
+- The health-request log is a learning example; frequent polling could
+  make it noisy in production.
