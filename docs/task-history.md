@@ -150,3 +150,30 @@ Executed by the learner and reviewed in chat:
   Linting passed without approving it.
 - No automated frontend tests yet.
 - Frontend and backend are not connected.
+
+## Task 06 — React Components, JSX & Props
+
+### Completed
+
+- Replaced the starter page with a StockPilot sample overview.
+- Created SummaryCard with required, typed title and value props.
+- Rendered cards from an array using map and stable keys.
+- Added an optional description prop with conditional rendering.
+- Kept the page and cards as Server Components.
+
+### Verification
+
+Executed by the learner and reviewed in chat:
+
+- ESLint passed.
+- TypeScript checks passed.
+- Production build passed.
+- Browser displays both cards with the expected sample values.
+- Only the low-stock card displays a description.
+- Component and page code inspected by the assistant.
+
+### Limitations
+
+- Values are static sample data.
+- No backend integration or interactive state yet.
+- No automated component tests have been introduced.

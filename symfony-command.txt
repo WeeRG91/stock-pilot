@@ -61,6 +61,7 @@ $response = Invoke-WebRequest -Uri 'http://127.0.0.1:8000/api/health' -UseBasicP
 $response.StatusCode
 $response.Content
 
+Set-Location C:\Sites\stock-pilot-symfony\frontend
 Create Next js
 npm.cmd view next@latest version engines peerDependencies --json
 npm.cmd view create-next-app@latest version engines --json
