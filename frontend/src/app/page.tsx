@@ -1,5 +1,4 @@
 import { LowStockSummary } from "@/components/LowStockSummary";
-import { ProductSearch } from "@/components/ProductSearch";
 import { SummaryCard } from "@/components/SummaryCard";
 
 const summaryItems = [{ id: "products", title: "Products", value: 24 }];
@@ -21,14 +20,6 @@ export default function Home() {
         </div>
 
         <LowStockSummary value={3} />
-
-        <ProductSearch
-          productNames={[
-            "Wireless Mouse",
-            "Mechanical Keyboard",
-            "USB-C Cable",
-          ]}
-        />
       </div>
     </main>
   );

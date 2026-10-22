@@ -235,3 +235,31 @@ Executed by the learner; outputs reviewed in chat:
 - Tests use jsdom rather than a real browser.
 - Singular result-count wording remains to be polished.
 - Previously documented development dependency warnings remain open.
+
+## Task 09 — Routing, Layouts & Navigation
+
+### Completed
+
+- Created /products using App Router filesystem routing.
+- Moved sample product search from the overview to /products.
+- Added shared navigation in the root layout using next/link.
+- Updated the application title and description.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- Existing component suite passed: 3 tests across 2 files.
+- ESLint passed.
+- TypeScript checks passed.
+- Production build passed and includes / and /products.
+- Learner confirmed navigation, direct access, and browser title.
+- Assistant inspected both pages and the root layout.
+
+### Decisions and limitations
+
+- Pages and root layout remain Server Components.
+- Interactive components retain their existing client boundaries.
+- Navigation was checked manually; no automated navigation test yet.
+- Products remain static samples without backend integration.
+- Previously documented development dependency warnings remain open.
