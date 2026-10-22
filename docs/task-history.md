@@ -476,3 +476,37 @@ Executed by the learner; outputs reviewed in chat:
 - Database integration tests remain deferred.
 - Post-conflict database state was not independently verified.
 - Existing Content-Type, unknown-field, and authentication limitations remain.
+
+## Task 17 — Product Activation & Deactivation
+
+### Completed
+
+- Added active status, defaulting to true for new PHP entities.
+- Added activate/deactivate methods and unit tests.
+- Migrated existing products to active before enforcing NOT NULL.
+- Included active in list, detail, creation, and update responses.
+- Added POST activation and deactivation endpoints.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- Entity tests cover initial status and repeated state transitions.
+- Migration preview reviewed and migration applied successfully.
+- Existing product records preserved and backfilled as active.
+- List and detail responses include boolean active status.
+- Deactivation persisted; detail updates preserved inactive status.
+- Reactivation returned active status.
+- Missing product returned 404.
+- Full backend suite passed: 9 tests, 25 assertions.
+- Mapping is valid and database schema remains synchronized.
+- Assistant inspected entity, migration, and controller changes.
+
+### Decisions and limitations
+
+- Deactivation preserves records; it does not delete products.
+- List endpoint still includes inactive products.
+- Database-backed endpoint verification remains manual.
+- Database integration tests remain deferred.
+- Reversing the migration removes stored activation choices.
+- Previously recorded dependency and API limitations remain open.

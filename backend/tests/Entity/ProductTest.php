@@ -28,4 +28,28 @@ final class ProductTest extends TestCase
         self::assertSame('MOUSE-002', $product->getSku());
         self::assertNull($product->getId());
     }
+
+    public function testNewProductIsActive(): void
+    {
+        $product = new Product('Wireless Mouse', 'MOUSE-001');
+
+        self::assertTrue($product->isActive());
+    }
+
+    public function testCanDeactivateAndReactivateProduct(): void
+    {
+        $product = new Product('Wireless Mouse', 'MOUSE-001');
+
+        $product->deactivate();
+        self::assertFalse($product->isActive());
+
+        $product->deactivate();
+        self::assertFalse($product->isActive());
+
+        $product->activate();
+        self::assertTrue($product->isActive());
+
+        $product->activate();
+        self::assertTrue($product->isActive());
+    }
 }

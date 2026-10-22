@@ -21,6 +21,9 @@ class Product
     #[ORM\Column(length: 50, unique: true)]
     private string $sku;
 
+    #[ORM\Column]
+    private bool $active = true;
+
     public function __construct(string $name, string $sku)
     {
         $this->name = $name;
@@ -46,5 +49,20 @@ class Product
     {
         $this->name = $name;
         $this->sku = $sku;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function activate(): void
+    {
+        $this->active = true;
+    }
+
+    public function deactivate(): void
+    {
+        $this->active = false;
     }
 }

@@ -35,6 +35,7 @@ final class ProductController
                 'id' => $product->getId(),
                 'name' => $product->getName(),
                 'sku' => $product->getSku(),
+                'active' => $product->isActive(),
             ];
         }
 
@@ -63,6 +64,7 @@ final class ProductController
                 'id' => $product->getId(),
                 'name' => $product->getName(),
                 'sku' => $product->getSku(),
+                'active' => $product->isActive(),
             ],
         ]);
     }
@@ -97,6 +99,7 @@ final class ProductController
                     'id' => $product->getId(),
                     'name' => $product->getName(),
                     'sku' => $product->getSku(),
+                    'active' => $product->isActive(),
                 ],
             ],
             Response::HTTP_CREATED,
@@ -151,8 +154,31 @@ final class ProductController
                 'id' => $product->getId(),
                 'name' => $product->getName(),
                 'sku' => $product->getSku(),
+                'active' => $product->isActive(),
             ],
         ]);
+    }
+
+    #[Route(
+        '/api/products/{id}/activate',
+        name: 'api_products_activate',
+        requirements: ['id' => '\d+'],
+        methods: ['POST'],
+    )]
+    public function activate(int $id): JsonResponse
+    {
+        return $this->changeActivation($id, true);
+    }
+
+    #[Route(
+        '/api/products/{id}/deactivate',
+        name: 'api_products_deactivate',
+        requirements: ['id' => '\d+'],
+        methods: ['POST'],
+    )]
+    public function deactivate(int $id): JsonResponse
+    {
+        return $this->changeActivation($id, false);
     }
 
     private function readProductDetails(
@@ -215,5 +241,34 @@ final class ProductController
         }
 
         return $input;
+    }
+
+    private function changeActivation(int $id, bool $active): JsonResponse
+    {
+        $product = $this->entityManager->find(Product::class, $id);
+
+        if ($product === null) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Product not found.']],
+                Response::HTTP_NOT_FOUND,
+            );
+        }
+
+        if ($active) {
+            $product->activate();
+        } else {
+            $product->deactivate();
+        }
+
+        $this->entityManager->flush();
+
+        return new JsonResponse([
+            'data' => [
+                'id' => $product->getId(),
+                'name' => $product->getName(),
+                'sku' => $product->getSku(),
+                'active' => $product->isActive(),
+            ],
+        ]);
     }
 }
