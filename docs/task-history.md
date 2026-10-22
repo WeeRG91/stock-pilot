@@ -263,3 +263,37 @@ Executed by the learner; outputs reviewed in chat:
 - Navigation was checked manually; no automated navigation test yet.
 - Products remain static samples without backend integration.
 - Previously documented development dependency warnings remain open.
+
+## Task 10 — PostgreSQL Environment & Doctrine Fundamentals
+
+### Completed
+
+- Verified the existing PostgreSQL 18.6 Windows service.
+- Verified PHP's PostgreSQL PDO driver.
+- Created the stockpilot login role and development database.
+- Installed Doctrine ORM 3.7.5, DBAL 4.5.0, and migrations support.
+- Configured credentials in ignored backend/.env.local.
+- Used DATABASE_URL without the resolve processor.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- PostgreSQL accepts connections on localhost:5432.
+- stockpilot connects to the stockpilot database.
+- Role has no superuser, database-creation, or role-management privileges.
+- Symfony's Doctrine SQL query confirms the configured user and database.
+- Git ignores .env.local.
+- YAML lint, Composer validation, and platform requirements passed.
+- Container lint passed.
+- Backend test suite passed: 1 test, 4 assertions.
+- Dev cache rebuilt and database connection rechecked successfully.
+
+### Decisions and limitations
+
+- Reused the existing Windows PostgreSQL installation.
+- Application role owns its development database.
+- No entities, application tables, or migrations created yet.
+- No test database or automated database tests yet.
+- Database credentials are excluded from Git.
+- Local role and database creation are not reproduced by repository files.
