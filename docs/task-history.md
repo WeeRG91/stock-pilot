@@ -410,3 +410,36 @@ Executed by the learner; outputs reviewed in chat:
 - Automated database tests remain deferred.
 - Router-level errors do not yet share a standardized JSON format.
 - Authentication and authorization have not been introduced.
+
+## Task 15 — Create Products with Validated JSON
+
+### Completed
+
+- Installed Symfony Validator 7.4.21.
+- Created CreateProductInput with trimming and validation constraints.
+- Added four database-free DTO tests.
+- Implemented POST /api/products with explicit response fields.
+- Added 400 responses for malformed JSON or non-object bodies.
+- Added 422 responses for invalid fields.
+- Persisted valid products and returned 201 with a Location header.
+- Returned 409 for duplicate SKU database violations.
+
+### Verification
+
+- Learner executed DTO tests: 4 tests, 10 assertions; output reviewed.
+- Assistant inspected the DTO and creation action.
+- Manual HTTP checks verified normalization, 400, and 422 responses.
+- Creation returned 201; the Location URL returned the stored Product.
+- Duplicate creation returned 409; SQL confirmed one matching row.
+- Learner reported no errors for final Composer validation,
+  full backend suite, and schema validation.
+- Final check outputs were not shared.
+
+### Decisions and limitations
+
+- DTO validation is separate from entity persistence.
+- Database uniqueness remains authoritative.
+- Database integration tests remain deferred.
+- Request Content-Type is not yet enforced.
+- Unknown JSON fields are currently ignored.
+- Authentication and authorization have not been introduced.

@@ -120,3 +120,15 @@ php bin/console lint:container
 
 Verify HTTP outcomes
 curl.exe -i http://127.0.0.1:8000/api/products/1
+
+Install Validator
+composer require symfony/validator:"7.4.*"
+
+'{"name":" Mechanical Keyboard ","sku":" KEYBOARD-001 "}' |
+    curl.exe -i -H "Content-Type: application/json" --data-binary '@-' http://127.0.0.1:8000/api/products
+'{"name":' |
+    curl.exe -i -H "Content-Type: application/json" --data-binary '@-' http://127.0.0.1:8000/api/products
+'{"name":123,"sku":"KEYBOARD-001"}' |
+    curl.exe -i -H "Content-Type: application/json" --data-binary '@-' http://127.0.0.1:8000/api/products
+'{"name":"   ","sku":""}' |
+    curl.exe -i -H "Content-Type: application/json" --data-binary '@-' http://127.0.0.1:8000/api/products
