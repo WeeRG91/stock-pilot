@@ -117,3 +117,6 @@ php bin/console app:create-sample-product --env=dev
 php -l src/Controller/ProductController.php
 php bin/console debug:router api_products_index
 php bin/console lint:container
+
+Verify HTTP outcomes
+curl.exe -i http://127.0.0.1:8000/api/products/1

@@ -382,3 +382,31 @@ Executed by the learner; outputs reviewed in chat:
 - Listing is unpaginated and has no search or filters.
 - Empty-list behavior has not been exercised.
 - Authentication and authorization have not been introduced.
+
+## Task 14 — Product Details & Missing Records
+
+### Completed
+
+- Added GET /api/products/{id} with a digit-only route requirement.
+- Retrieved a Product by primary key through the EntityManager.
+- Returned explicit product fields for existing records.
+- Returned a JSON error with HTTP 404 for missing records.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- PHP syntax, route matching, and container lint passed.
+- Existing product returned 200 and expected JSON.
+- Missing product returned 404 and expected JSON error.
+- Both responses use application/json.
+- Existing backend suite passed: 2 tests, 7 assertions.
+- Mapping is valid and database schema remains synchronized.
+- Assistant inspected the controller implementation.
+
+### Limitations
+
+- Database-backed endpoint checks remain manual.
+- Automated database tests remain deferred.
+- Router-level errors do not yet share a standardized JSON format.
+- Authentication and authorization have not been introduced.
