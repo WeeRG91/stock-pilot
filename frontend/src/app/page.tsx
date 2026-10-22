@@ -1,13 +1,8 @@
+import { LowStockSummary } from "@/components/LowStockSummary";
 import { SummaryCard } from "@/components/SummaryCard";
 
 const summaryItems = [
   { id: "products", title: "Products", value: 24 },
-  {
-    id: "low-stock",
-    title: "Low-stock products",
-    value: 3,
-    description: "Sample products below their stock threshold.",
-  },
 ];
 
 export default function Home() {
@@ -26,10 +21,11 @@ export default function Home() {
               key={item.id}
               title={item.title}
               value={item.value}
-              description={item.description}
             />
           ))}
         </div>
+
+        <LowStockSummary value={3} />
       </div>
     </main>
   );

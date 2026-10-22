@@ -66,3 +66,13 @@ Create Next js
 npm.cmd view next@latest version engines peerDependencies --json
 npm.cmd view create-next-app@latest version engines --json
 npx.cmd create-next-app@16.4.2 frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm --disable-git --no-react-compiler --no-cache-components --yes
+
+check current version requirements
+npm.cmd view vitest@latest version engines peerDependencies --json
+npm.cmd view @vitejs/plugin-react@latest version engines peerDependencies --json
+npm.cmd view jsdom@latest version engines --json
+
+npm.cmd run test:run
+npm.cmd run lint
+npx.cmd tsc --noEmit
+npm.cmd run build

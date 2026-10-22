@@ -177,3 +177,32 @@ Executed by the learner and reviewed in chat:
 - Values are static sample data.
 - No backend integration or interactive state yet.
 - No automated component tests have been introduced.
+
+## Task 07 — State, Events & Client Components
+
+### Completed
+
+- Created LowStockSummary as a Client Component.
+- Used useState and a click handler to toggle visibility.
+- Kept the home page as a Server Component.
+- Added accessible button labels and expanded-state attributes.
+- Configured Vitest, jsdom, and React Testing Library.
+- Added an automated hide-and-show interaction test.
+
+### Verification
+
+- Assistant reviewed the component, page, and test configuration.
+- Learner confirmed browser toggle behavior.
+- Focused interaction test passed: 1 test in 1 file.
+  Output reviewed in chat.
+- Learner reported the full suite, lint, TypeScript checks, and
+  production build completed without errors.
+  Final command outputs were not shared.
+
+### Decisions and limitations
+
+- State is local and resets on refresh.
+- Component tests use jsdom, not a real browser.
+- Used jsdom 27.4.0 for compatibility with Node 22.16.0.
+- Updated Node type definitions to version 22.
+- Previously documented development dependency warnings remain open.
