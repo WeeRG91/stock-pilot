@@ -89,5 +89,31 @@ Executed by the learner and reviewed in chat:
 
 - Used Symfony's existing logger without additional dependencies.
 - Constructor injection makes the controller's dependency explicit.
-- The health-request log is a learning example; frequent polling could
-  make it noisy in production.
+- The health-request log is a learning example; frequent polling could make it noisy in production.
+
+## Task 04 — Configuration & Environment Variables
+
+### Completed
+
+- Defined APP_NAME=StockPilot as a shared environment default.
+- Mapped APP_NAME to the app.name container parameter.
+- Explicitly injected the application name into HealthController.
+- Used an ignored .env.dev.local file to override the name in dev.
+
+### Verification
+
+Executed by the learner and reviewed in chat:
+
+- YAML syntax and container lint passed.
+- Controller arguments include the logger and APP_NAME.
+- Dev console resolves APP_NAME to StockPilot Local.
+- HTTP endpoint returns 200 with application: StockPilot Local.
+- Git ignores .env.dev.local.
+- Test suite passes with the shared default: 1 test, 4 assertions.
+
+### Decisions and limitations
+
+- Scalar constructor arguments are configured explicitly.
+- Local development overrides are excluded from Git.
+- The endpoint test verifies the default response.
+- The development override was verified manually.

@@ -12,6 +12,7 @@ final class HealthController
 {
     public function __construct(
         private readonly LoggerInterface $logger,
+        private readonly string $applicationName,
     ) {}
 
     #[Route('/api/health', name: 'api_health', methods: ['GET'])]
@@ -21,7 +22,7 @@ final class HealthController
 
         return new JsonResponse([
             'status' => 'ok',
-            'application' => 'StockPilot',
+            'application' => $this->applicationName,
         ]);
     }
 }

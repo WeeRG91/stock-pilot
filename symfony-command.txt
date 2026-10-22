@@ -40,6 +40,23 @@ php bin/console lint:container
 PHPUnit will execute the test
 composer require --dev symfony/test-pack
 php bin/phpunit tests/Controller/HealthControllerTest.php
+php -l src/Controller/HealthController.php
+php bin/console lint:container
 
 php bin/console cache:clear --env=dev
 git diff -- config/reference.php
+
+Inspect the injected dependency
+php bin/console debug:container 'App\Controller\HealthController' --show-arguments
+
+Inspect the current configuration
+php bin/console debug:container --parameters
+php bin/console lint:yaml config/services.yaml
+php bin/console debug:container --parameter=app.name
+php bin/console debug:container --env-var=APP_NAME
+php bin/console debug:container 'App\Controller\HealthController'
+
+test api
+$response = Invoke-WebRequest -Uri 'http://127.0.0.1:8000/api/health' -UseBasicParsing
+$response.StatusCode
+$response.Content
