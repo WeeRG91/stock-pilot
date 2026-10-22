@@ -324,5 +324,35 @@ Executed by the learner; outputs reviewed in chat:
 - Constructor requires name and SKU but does not reject empty strings.
 - No persistence or duplicate-SKU integration tests yet.
 - Migration down() drops the products table and its data.
-- Verbose dry run reported deprecations in Doctrine's LazySchema
-  integration; vendor files remain unchanged.
+- Verbose dry run reported deprecations in Doctrine's LazySchema integration; vendor files remain unchanged.
+
+## Task 12 — Doctrine Persistence & Manual Verification
+
+### Completed
+
+- Created a Symfony command with an injected EntityManager.
+- Used persist and flush to save a sample Product.
+- Cleared managed entities and reloaded the Product by ID.
+- Used a repository lookup to skip an existing sample SKU.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- Command syntax, registration, and container lint passed.
+- First execution saved and reloaded Product #1.
+- Second execution skipped insertion.
+- SQL confirmed the stored name and SKU.
+- Existing backend suite passed: 2 tests, 7 assertions.
+- Mapping is valid and database schema remains synchronized.
+- Assistant inspected the final command.
+
+### Decisions and limitations
+
+- Database integration tests deferred at the learner's request.
+- No test database or test credentials file created.
+- Persistence verified manually against the development database.
+- The preliminary SKU lookup does not prevent concurrent insert races.
+- The database unique index remains the final uniqueness guarantee.
+- Sample data is created by running the command, not by a migration.
+
