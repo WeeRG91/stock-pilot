@@ -117,3 +117,36 @@ Executed by the learner and reviewed in chat:
 - Local development overrides are excluded from Git.
 - The endpoint test verifies the default response.
 - The development override was verified manually.
+
+## Task 05 — Frontend Environment & Next.js Initialization
+
+### Completed
+
+- Verified Node.js 22.16.0 and npm 11.19.1.
+- Used npm.cmd and npx.cmd without changing PowerShell execution policy.
+- Created a separate Next.js 16.4.2 frontend with React 19.3.0.
+- Enabled TypeScript, App Router, Tailwind CSS, and ESLint.
+- Kept one Git repository at the StockPilot root.
+- Deferred React Compiler and Cache Components.
+
+### Verification
+
+Executed by the learner and reviewed in chat:
+
+- Direct dependencies installed successfully.
+- No nested frontend Git repository.
+- Development server started; starter page displayed in the browser.
+- ESLint passed.
+- Production build and TypeScript checks passed.
+- node_modules and .next are ignored.
+- Production dependency audit reported zero vulnerabilities.
+
+### Known limitations
+
+- Full audit reports five affected development packages from one
+  underlying braces advisory, GHSA-vfj7-8cjw-p6xm.
+- Installed ESLint 9 reports that it is unsupported.
+- unrs-resolver has a pending install-script policy decision.
+  Linting passed without approving it.
+- No automated frontend tests yet.
+- Frontend and backend are not connected.

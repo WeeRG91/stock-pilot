@@ -60,3 +60,8 @@ test api
 $response = Invoke-WebRequest -Uri 'http://127.0.0.1:8000/api/health' -UseBasicParsing
 $response.StatusCode
 $response.Content
+
+Create Next js
+npm.cmd view next@latest version engines peerDependencies --json
+npm.cmd view create-next-app@latest version engines --json
+npx.cmd create-next-app@16.4.2 frontend --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --use-npm --disable-git --no-react-compiler --no-cache-components --yes
