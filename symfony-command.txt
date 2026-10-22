@@ -20,6 +20,8 @@ $env:Path += ";$symfonyFolder"
 create Symfony project 
 symfony new backend --version="7.4.*" --no-git
 
+symfony server:start
+
 Set-Location C:\Sites\stock-pilot-symfony
 git rev-parse --show-toplevel
 
@@ -79,3 +81,29 @@ npm.cmd run build
 
 ORM pack
 composer require symfony/orm-pack
+
+Get-ChildItem -LiteralPath 'C:\Program Files\PostgreSQL' -Directory -ErrorAction SilentlyContinue |
+    Select-Object Name, FullName
+& 'C:\Program Files\PostgreSQL\18\bin\psql.exe' --version
+& 'C:\Program Files\PostgreSQL\18\bin\pg_isready.exe' -h localhost -p 5432
+& 'C:\Program Files\PostgreSQL\18\bin\psql.exe' -h localhost -p 5432 -U postgres -d postgres -W
+postgres=#
+SELECT current_user, current_database(), version();
+CREATE ROLE stockpilot LOGIN;
+\password stockpilot
+CREATE DATABASE stockpilot OWNER stockpilot;
+& 'C:\Program Files\PostgreSQL\18\bin\psql.exe' -h localhost -p 5432 -U stockpilot -d stockpilot -W
+SELECT current_user, current_database();
+SELECT rolname, rolsuper, rolcreatedb, rolcreaterole
+FROM pg_roles
+WHERE rolname = current_user;
+
+Entity
+php -l src/Entity/Product.php
+php bin/console doctrine:mapping:info
+php bin/console doctrine:migrations:diff
+php bin/console doctrine:migrations:migrate --dry-run # Preview only
+php bin/console doctrine:migrations:migrate --dry-run -vv
+php bin/console doctrine:migrations:migrate
+php bin/console doctrine:migrations:status
+php bin/console doctrine:schema:validate

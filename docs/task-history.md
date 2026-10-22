@@ -297,3 +297,32 @@ Executed by the learner; outputs reviewed in chat:
 - No test database or automated database tests yet.
 - Database credentials are excluded from Git.
 - Local role and database creation are not reproduced by repository files.
+
+## Task 11 — First Doctrine Entity & Migration
+
+### Completed
+
+- Wrote Product with mapped ID, name, and SKU properties.
+- Used a database-generated ID and unique SKU index.
+- Generated, reviewed, previewed, and applied the migration.
+- Added a unit test for a new Product's initial state.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- PHP syntax passed; Doctrine discovers Product.
+- Migration applied: 1 executed, none pending.
+- Mapping is valid and database schema is synchronized.
+- Column inspection confirms non-nullable fields and identity ID.
+- Product unit test passed: 1 test, 3 assertions.
+- Full backend suite passed: 2 tests, 7 assertions.
+
+### Decisions and limitations
+
+- PHP ID is nullable before persistence; database primary key is not.
+- Constructor requires name and SKU but does not reject empty strings.
+- No persistence or duplicate-SKU integration tests yet.
+- Migration down() drops the products table and its data.
+- Verbose dry run reported deprecations in Doctrine's LazySchema
+  integration; vendor files remain unchanged.
