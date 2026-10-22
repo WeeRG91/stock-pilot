@@ -356,3 +356,29 @@ Executed by the learner; outputs reviewed in chat:
 - The database unique index remains the final uniqueness guarantee.
 - Sample data is created by running the command, not by a migration.
 
+## Task 13 — Product List REST Endpoint
+
+### Completed
+
+- Created GET /api/products.
+- Retrieved products through Doctrine's standard repository.
+- Ordered results by ascending ID.
+- Returned explicit id, name, and sku fields inside a data wrapper.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- PHP syntax, route registration, and container lint passed.
+- HTTP request returned 200 and application/json.
+- Response contained the persisted sample Product.
+- Existing backend suite passed: 2 tests, 7 assertions.
+- Database schema remains synchronized.
+- Assistant inspected the controller implementation.
+
+### Limitations
+
+- Endpoint verification is manual; database integration tests remain deferred.
+- Listing is unpaginated and has no search or filters.
+- Empty-list behavior has not been exercised.
+- Authentication and authorization have not been introduced.

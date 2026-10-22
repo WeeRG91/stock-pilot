@@ -107,3 +107,13 @@ php bin/console doctrine:migrations:migrate --dry-run -vv
 php bin/console doctrine:migrations:migrate
 php bin/console doctrine:migrations:status
 php bin/console doctrine:schema:validate
+
+Command
+php -l src/Command/CreateSampleProductCommand.php
+php bin/console app:create-sample-product --help
+php bin/console lint:container
+php bin/console app:create-sample-product --env=dev
+
+php -l src/Controller/ProductController.php
+php bin/console debug:router api_products_index
+php bin/console lint:container
