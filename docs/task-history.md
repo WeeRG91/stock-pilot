@@ -578,3 +578,37 @@ Executed by the learner; outputs reviewed in chat:
 - Large offsets can become expensive.
 - Pagination verification remains manual; database tests are deferred.
 - Earlier API and dependency limitations remain open.
+
+## Task 20 — Fetch Real Products from Symfony
+
+### Completed
+
+- Configured the backend address in ignored frontend/.env.local.
+- Replaced sample names with a server-side Symfony API fetch.
+- Displayed product names, SKUs, active status, and result totals.
+- Added loading and error fallbacks with retry.
+- Added runtime response parsing and six parser tests.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat unless noted:
+
+- Backend returned product data and pagination metadata.
+- Frontend environment file is ignored by Git.
+- Learner confirmed real products displayed and error recovery worked.
+- Parser tests passed: 6 tests.
+- Full frontend suite passed: 9 tests across 3 files.
+- ESLint and TypeScript checks passed.
+- Production build passed; /products is dynamic.
+- Assistant inspected page, types, parser, and fallback components.
+
+### Decisions and limitations
+
+- Next.js fetches Symfony from a Server Component.
+- Backend address is not exposed through NEXT_PUBLIC_.
+- Fetch uses no-store; browser CORS configuration is unnecessary here.
+- Page displays only the first API page; no pagination controls yet.
+- Sample ProductSearch remains available but is not used on this page.
+- Parser checks structure and ranges, not all metadata relationships.
+- Network integration and error recovery were verified manually.
+- Earlier API and dependency limitations remain open.
