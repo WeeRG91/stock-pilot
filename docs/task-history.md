@@ -510,3 +510,38 @@ Executed by the learner; outputs reviewed in chat:
 - Database integration tests remain deferred.
 - Reversing the migration removes stored activation choices.
 - Previously recorded dependency and API limitations remain open.
+
+## Task 18 — Product Search & Status Filtering
+
+### Completed
+
+- Added ProductRepository and associated it with Product.
+- Injected the repository into ProductController.
+- Added case-insensitive substring search across name and SKU.
+- Added optional active=true/false filtering.
+- Combined filters using bound query parameters and grouped conditions.
+- Rejected invalid query parameter types and status values with JSON 400.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- Syntax and container checks passed.
+- Name and SKU searches returned expected products.
+- Unmatched search returned an empty data array.
+- Combined search/status filters returned expected results.
+- Unfiltered listing included inactive products.
+- Surrounding search whitespace was ignored.
+- Array parameters and invalid status values returned 400.
+- Sample product reactivated after verification.
+- Existing backend suite passed: 9 tests, 25 assertions.
+- Mapping is valid and database schema remains synchronized.
+- Assistant inspected repository and controller changes.
+
+### Decisions and limitations
+
+- Omitted status includes both active and inactive products.
+- Search treats percent and underscore as literal characters.
+- Listing remains unpaginated.
+- Repository query verification remains manual.
+- Database integration tests and earlier limitations remain deferred.

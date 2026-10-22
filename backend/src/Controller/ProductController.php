@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
 use App\Dto\ProductDetailsInput;
+use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -19,14 +20,38 @@ final class ProductController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly ProductRepository $productRepository,
     ) {}
 
     #[Route('/api/products', name: 'api_products_index', methods: ['GET'])]
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $products = $this->entityManager
-            ->getRepository(Product::class)
-            ->findBy([], ['id' => 'ASC']);
+        $query = $request->query->all();
+        $search = $query['search'] ?? '';
+
+        if (!is_string($search)) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Search must be a string.']],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $active = null;
+
+        if (array_key_exists('active', $query)) {
+            $activeValue = $query['active'];
+
+            if (!in_array($activeValue, ['true', 'false'], true)) {
+                return new JsonResponse(
+                    ['error' => ['message' => 'Active must be true or false.']],
+                    Response::HTTP_BAD_REQUEST,
+                );
+            }
+
+            $active = $activeValue === 'true';
+        }
+
+        $products = $this->productRepository->findForListing($search, $active);
 
         $data = [];
 

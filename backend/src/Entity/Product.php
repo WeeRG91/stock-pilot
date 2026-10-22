@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ProductRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: 'products')]
 class Product
 {
