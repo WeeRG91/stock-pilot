@@ -206,3 +206,32 @@ Executed by the learner and reviewed in chat:
 - Used jsdom 27.4.0 for compatibility with Node 22.16.0.
 - Updated Node type definitions to version 22.
 - Previously documented development dependency warnings remain open.
+
+## Task 08 — Controlled Inputs & Derived State
+
+### Completed
+
+- Created ProductSearch with a controlled search input.
+- Derived filtered results from props and query state.
+- Added case-insensitive matching and whitespace normalization.
+- Displayed a result count and an empty-state message.
+- Added tests for filtering, clearing, and unmatched searches.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- Full frontend suite passed: 3 tests across 2 files.
+- ESLint passed.
+- TypeScript checks passed.
+- Production build passed.
+- Learner confirmed expected browser search behavior.
+- Assistant reviewed the component and page implementation.
+
+### Decisions and limitations
+
+- Product names are static samples, independent of overview totals.
+- Filtering runs during rendering without extra state or Effects.
+- Tests use jsdom rather than a real browser.
+- Singular result-count wording remains to be polished.
+- Previously documented development dependency warnings remain open.

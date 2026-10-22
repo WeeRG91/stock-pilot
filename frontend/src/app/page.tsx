@@ -1,9 +1,8 @@
 import { LowStockSummary } from "@/components/LowStockSummary";
+import { ProductSearch } from "@/components/ProductSearch";
 import { SummaryCard } from "@/components/SummaryCard";
 
-const summaryItems = [
-  { id: "products", title: "Products", value: 24 },
-];
+const summaryItems = [{ id: "products", title: "Products", value: 24 }];
 
 export default function Home() {
   return (
@@ -17,15 +16,19 @@ export default function Home() {
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {summaryItems.map((item) => (
-            <SummaryCard
-              key={item.id}
-              title={item.title}
-              value={item.value}
-            />
+            <SummaryCard key={item.id} title={item.title} value={item.value} />
           ))}
         </div>
 
         <LowStockSummary value={3} />
+
+        <ProductSearch
+          productNames={[
+            "Wireless Mouse",
+            "Mechanical Keyboard",
+            "USB-C Cable",
+          ]}
+        />
       </div>
     </main>
   );
