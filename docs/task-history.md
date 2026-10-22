@@ -612,3 +612,34 @@ Executed by the learner; outputs reviewed in chat unless noted:
 - Parser checks structure and ranges, not all metadata relationships.
 - Network integration and error recovery were verified manually.
 - Earlier API and dependency limitations remain open.
+
+## Task 21 — URL-Based Product Filters
+
+### Completed
+
+- Read and validated searchParams in the Products Server Component.
+- Forwarded search and status filters to Symfony.
+- Added a native GET form and Clear filters link.
+- Initialized form fields from the URL.
+- Keyed the form by applied filters to reset uncontrolled fields on navigation.
+- Extracted filter parsing and added eight unit tests.
+
+### Verification
+
+- Learner confirmed search, status, combined filters, and refresh behavior.
+- Learner confirmed clearing resets results and both form fields.
+- Filter-parser tests passed: 8 tests; output reviewed in chat.
+- Learner reported no errors for the final suite, lint, type check, and build.
+- Final command outputs were not shared.
+- Assistant inspected the page, parser, and form key.
+
+### Decisions and limitations
+
+- URL is the source of truth for applied filters.
+- Filtering runs in Symfony before pagination.
+- Empty frontend status means all statuses and is omitted from the API request.
+- Repeated filter parameters receive a visible validation message.
+- Native form submission performs document navigation.
+- Form navigation and API integration remain manually verified.
+- Pagination controls are not implemented yet.
+- Earlier API and dependency limitations remain open.
