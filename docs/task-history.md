@@ -42,3 +42,29 @@ No automated application tests have been introduced or executed yet.
 ### Next steps
 
 - Agree on Task 02 before starting further implementation.
+
+## Task 02 — First JSON Endpoint
+
+### Completed
+
+- Created GET /api/health using a PHP route attribute.
+- Returned application status through JsonResponse.
+- Installed PHPUnit and Symfony browser testing tools.
+- Added HealthControllerTest using WebTestCase.
+
+### Verification
+
+Executed by the learner and reviewed in chat:
+
+- PHP syntax check: passed.
+- Route registration: GET /api/health recognized.
+- Manual HTTP request: 200, application/json, expected response body.
+- Focused functional test: passed, 1 test and 4 assertions.
+- Full test suite: passed, 1 test and 4 assertions.
+
+### Decisions and limitations
+
+- The controller uses a plain class without a base controller.
+- The functional test uses Symfony's kernel without a running server.
+- The endpoint confirms application responsiveness only.
+- Database and external-service health are not checked.

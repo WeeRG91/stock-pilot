@@ -35,3 +35,7 @@ composer validate --strict
 
 php bin/console lint:yaml config
 php bin/console lint:container
+
+PHPUnit will execute the test
+composer require --dev symfony/test-pack
+php bin/phpunit tests/Controller/HealthControllerTest.php
