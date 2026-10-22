@@ -41,4 +41,10 @@ class Product
     {
         return $this->sku;
     }
+
+    public function updateDetails(string $name, string $sku): void
+    {
+        $this->name = $name;
+        $this->sku = $sku;
+    }
 }

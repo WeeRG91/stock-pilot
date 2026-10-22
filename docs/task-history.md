@@ -443,3 +443,36 @@ Executed by the learner; outputs reviewed in chat:
 - Request Content-Type is not yet enforced.
 - Unknown JSON fields are currently ignored.
 - Authentication and authorization have not been introduced.
+
+## Task 16 — Update Products with PUT
+
+### Completed
+
+- Added Product::updateDetails() and a unit test.
+- Renamed CreateProductInput to ProductDetailsInput.
+- Shared JSON parsing and validation between POST and PUT.
+- Added PUT /api/products/{id}, requiring name and SKU.
+- Used Doctrine change tracking and flush for managed entities.
+
+### Verification
+
+Executed by the learner; outputs reviewed in chat:
+
+- Syntax, container lint, and PUT route matching passed.
+- Update returned 200 with normalized details and unchanged ID.
+- GET confirmed persistence.
+- Repeating the same PUT returned 200.
+- Duplicate SKU returned 409.
+- Blank values returned 422.
+- Missing product returned 404.
+- Full backend suite passed: 7 tests, 20 assertions.
+- Mapping is valid and database schema remains synchronized.
+- Assistant inspected the implementation.
+
+### Decisions and limitations
+
+- PUT requires all currently editable fields; PATCH is not implemented.
+- Missing-record lookup precedes request-body validation.
+- Database integration tests remain deferred.
+- Post-conflict database state was not independently verified.
+- Existing Content-Type, unknown-field, and authentication limitations remain.

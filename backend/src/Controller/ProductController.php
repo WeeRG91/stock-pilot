@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
-use App\Dto\CreateProductInput;
+use App\Dto\ProductDetailsInput;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -73,6 +73,92 @@ final class ProductController
         ValidatorInterface $validator,
         UrlGeneratorInterface $urlGenerator,
     ): JsonResponse {
+        $input = $this->readProductDetails($request, $validator);
+
+        if ($input instanceof JsonResponse) {
+            return $input;
+        }
+
+        $product = new Product($input->name, $input->sku);
+
+        try {
+            $this->entityManager->persist($product);
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException) {
+            return new JsonResponse(
+                ['error' => ['message' => 'A product with this SKU already exists.']],
+                Response::HTTP_CONFLICT,
+            );
+        }
+
+        return new JsonResponse(
+            [
+                'data' => [
+                    'id' => $product->getId(),
+                    'name' => $product->getName(),
+                    'sku' => $product->getSku(),
+                ],
+            ],
+            Response::HTTP_CREATED,
+            [
+                'Location' => $urlGenerator->generate(
+                    'api_products_show',
+                    ['id' => $product->getId()],
+                ),
+            ],
+        );
+    }
+
+    #[Route(
+        '/api/products/{id}',
+        name: 'api_products_update',
+        requirements: ['id' => '\d+'],
+        methods: ['PUT'],
+    )]
+    public function update(
+        int $id,
+        Request $request,
+        ValidatorInterface $validator,
+    ): JsonResponse {
+        $product = $this->entityManager->find(Product::class, $id);
+
+        if ($product === null) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Product not found.']],
+                Response::HTTP_NOT_FOUND,
+            );
+        }
+
+        $input = $this->readProductDetails($request, $validator);
+
+        if ($input instanceof JsonResponse) {
+            return $input;
+        }
+
+        $product->updateDetails($input->name, $input->sku);
+
+        try {
+            $this->entityManager->flush();
+        } catch (UniqueConstraintViolationException) {
+            return new JsonResponse(
+                ['error' => ['message' => 'A product with this SKU already exists.']],
+                Response::HTTP_CONFLICT,
+            );
+        }
+
+        return new JsonResponse([
+            'data' => [
+                'id' => $product->getId(),
+                'name' => $product->getName(),
+                'sku' => $product->getSku(),
+            ],
+        ]);
+    }
+
+    private function readProductDetails(
+        Request $request,
+        ValidatorInterface $validator,
+    ): ProductDetailsInput|JsonResponse {
         try {
             $payload = json_decode(
                 $request->getContent(),
@@ -104,7 +190,7 @@ final class ProductController
             );
         }
 
-        $input = new CreateProductInput($payload->name, $payload->sku);
+        $input = new ProductDetailsInput($payload->name, $payload->sku);
         $violations = $validator->validate($input);
 
         if (count($violations) > 0) {
@@ -128,33 +214,6 @@ final class ProductController
             );
         }
 
-        $product = new Product($input->name, $input->sku);
-
-        try {
-            $this->entityManager->persist($product);
-            $this->entityManager->flush();
-        } catch (UniqueConstraintViolationException) {
-            return new JsonResponse(
-                ['error' => ['message' => 'A product with this SKU already exists.']],
-                Response::HTTP_CONFLICT,
-            );
-        }
-
-        return new JsonResponse(
-            [
-                'data' => [
-                    'id' => $product->getId(),
-                    'name' => $product->getName(),
-                    'sku' => $product->getSku(),
-                ],
-            ],
-            Response::HTTP_CREATED,
-            [
-                'Location' => $urlGenerator->generate(
-                    'api_products_show',
-                    ['id' => $product->getId()],
-                ),
-            ],
-        );
+        return $input;
     }
 }

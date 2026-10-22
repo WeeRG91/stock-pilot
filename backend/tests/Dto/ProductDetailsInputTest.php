@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Dto;
 
-use App\Dto\CreateProductInput;
+use App\Dto\ProductDetailsInput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
 
-final class CreateProductInputTest extends TestCase
+final class ProductDetailsInputTest extends TestCase
 {
     public function testTrimsInputAndAcceptsValidValues(): void
     {
-        $input = new CreateProductInput(' Wireless Mouse ', ' MOUSE-001 ');
+        $input = new ProductDetailsInput(' Wireless Mouse ', ' MOUSE-001 ');
 
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()
@@ -25,7 +25,7 @@ final class CreateProductInputTest extends TestCase
 
     public function testRejectsWhitespaceOnlyValues(): void
     {
-        $input = new CreateProductInput('   ', '   ');
+        $input = new ProductDetailsInput('   ', '   ');
 
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()
@@ -45,7 +45,7 @@ final class CreateProductInputTest extends TestCase
 
     public function testAcceptsMaximumLengths(): void
     {
-        $input = new CreateProductInput(
+        $input = new ProductDetailsInput(
             str_repeat('N', 150),
             str_repeat('S', 50),
         );
@@ -59,7 +59,7 @@ final class CreateProductInputTest extends TestCase
 
     public function testRejectsValuesExceedingMaximumLengths(): void
     {
-        $input = new CreateProductInput(
+        $input = new ProductDetailsInput(
             str_repeat('N', 151),
             str_repeat('S', 51),
         );

@@ -6,7 +6,7 @@ namespace App\Dto;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class CreateProductInput
+final class ProductDetailsInput
 {
     #[Assert\NotBlank(message: 'Name is required.')]
     #[Assert\Length(
