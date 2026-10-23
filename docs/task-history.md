@@ -704,3 +704,36 @@ Executed by the learner; outputs reviewed unless noted:
 - Detail fetching and navigation remain manually verified.
 - Streaming may retain HTTP 200 while displaying not-found UI.
 - Earlier API and dependency limitations remain open.
+
+## Task 24 — Frontend Product Creation
+
+### Completed
+
+- Added /products/new and a creation link from the listing.
+- Created an interactive form using useActionState.
+- Submitted JSON to Symfony through a Server Action.
+- Displayed field errors and preserved input after failures.
+- Redirected successful creation to the validated product detail URL.
+- Added form-data and validation-error mapping helpers with tests.
+
+### Verification
+
+- Form-data tests passed: 4 tests; output reviewed.
+- Error-mapping tests passed: 4 tests; output reviewed.
+- Learner confirmed creation and detail-page redirect.
+- Learner confirmed duplicate-SKU and whitespace-only feedback.
+- Learner confirmed backend-failure handling and preserved inputs.
+- Learner reported no errors for the final suite, lint, type check,
+  and production build. Final outputs were not shared.
+- Assistant inspected the form, action, page, and helper implementations.
+
+### Decisions and limitations
+
+- Symfony remains authoritative for validation and persistence.
+- Browser constraints and basic form-data checks provide early feedback.
+- Pending submission disables ordinary form interaction.
+- POST requests are not automatically retried.
+- Network failure can leave creation outcome uncertain.
+- Full submission flow remains manually verified.
+- Authentication and authorization remain deferred.
+- Earlier API and dependency limitations remain open.

@@ -61,6 +61,13 @@ export default async function ProductsPage({
       <div className="mx-auto max-w-5xl">
         <h1 className="text-3xl font-bold text-zinc-900">Products</h1>
 
+        <Link
+          href="/products/new"
+          className="mt-4 inline-block rounded-lg bg-zinc-900 px-4 py-2 text-white"
+        >
+          Create product
+        </Link>
+
         <form
           key={JSON.stringify([search, active])}
           action="/products"
