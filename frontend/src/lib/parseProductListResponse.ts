@@ -1,4 +1,5 @@
-import type { Product, ProductListResponse } from "@/types/product";
+import type { ProductListResponse } from "@/types/product";
+import { isProduct } from "./isProduct";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -9,16 +10,6 @@ function isIntegerAtLeast(value: unknown, minimum: number): value is number {
     typeof value === "number" &&
     Number.isSafeInteger(value) &&
     value >= minimum
-  );
-}
-
-function isProduct(value: unknown): value is Product {
-  return (
-    isRecord(value) &&
-    isIntegerAtLeast(value.id, 1) &&
-    typeof value.name === "string" &&
-    typeof value.sku === "string" &&
-    typeof value.active === "boolean"
   );
 }
 

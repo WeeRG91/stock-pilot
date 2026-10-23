@@ -673,3 +673,34 @@ Executed by the learner; outputs reviewed in chat unless noted:
 - URL-builder tests do not execute network requests.
 - Navigation behavior remains manually verified.
 - Earlier API and dependency limitations remain open.
+
+## Task 23 — Product Details & Dynamic Routes
+
+### Completed
+
+- Created /products/[id] using asynchronous route params.
+- Validated ID syntax before fetching.
+- Fetched individual products from Symfony.
+- Extracted shared Product response validation.
+- Added a detail-response parser and ten tests.
+- Added tailored missing-product UI and listing links.
+
+### Verification
+
+Executed by the learner; outputs reviewed unless noted:
+
+- Learner confirmed existing products display their details.
+- Learner confirmed invalid and missing IDs show not-found UI.
+- Learner confirmed backend failure reaches the error fallback.
+- Full frontend suite passed: 42 tests across 6 files.
+- ESLint and TypeScript checks passed.
+- Production build passed with dynamic list and detail routes.
+
+### Decisions and limitations
+
+- API 404 selects notFound; other failures remain errors.
+- Successful API responses are validated at runtime.
+- Back to products returns to the unfiltered listing.
+- Detail fetching and navigation remain manually verified.
+- Streaming may retain HTTP 200 while displaying not-found UI.
+- Earlier API and dependency limitations remain open.

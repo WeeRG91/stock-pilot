@@ -14,3 +14,7 @@ export type ProductListResponse = {
     totalPages: number;
   };
 };
+
+export type ProductResponse = {
+  data: Product;
+};
