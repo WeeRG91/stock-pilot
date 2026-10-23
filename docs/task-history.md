@@ -643,3 +643,33 @@ Executed by the learner; outputs reviewed in chat unless noted:
 - Form navigation and API integration remain manually verified.
 - Pagination controls are not implemented yet.
 - Earlier API and dependency limitations remain open.
+
+## Task 22 — Frontend Pagination
+
+### Completed
+
+- Validated page and limit URL parameters with safe-integer checks.
+- Forwarded pagination to Symfony.
+- Displayed requested page and total-page metadata.
+- Added Previous/Next links preserving search, status, and limit.
+- Preserved limit while resetting page when submitting filters.
+- Added pagination parser cases and URL-builder tests.
+
+### Verification
+
+- Filter-parser tests passed: 20 tests; output reviewed.
+- URL-builder tests passed: 3 tests; output reviewed.
+- Learner confirmed page navigation and filter preservation.
+- Learner confirmed out-of-range recovery and empty-result behavior.
+- Learner reported no errors for the final suite, lint, type check,
+  and production build. Final outputs were not shared.
+- Assistant inspected pagination forwarding and navigation code.
+
+### Decisions and limitations
+
+- Pagination remains URL-driven without additional client state.
+- Previous on an out-of-range page links to the last available page.
+- Clear filters restores default filters and pagination.
+- URL-builder tests do not execute network requests.
+- Navigation behavior remains manually verified.
+- Earlier API and dependency limitations remain open.

@@ -1,3 +1,4 @@
+import { buildProductsHref } from "@/lib/buildProductsHref";
 import { parseProductFilters } from "@/lib/parseProductFilters";
 import { parseProductListResponse } from "@/lib/parseProductListResponse";
 import Link from "next/link";
@@ -20,7 +21,7 @@ export default async function ProductsPage({
     );
   }
 
-  const { search, active } = filters;
+  const { search, active, page, limit } = filters;
 
   const apiUrl = process.env.STOCKPILOT_API_URL;
 
@@ -37,6 +38,9 @@ export default async function ProductsPage({
   if (active !== "") {
     url.searchParams.set("active", active);
   }
+
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("limit", String(limit));
 
   const response = await fetch(url, {
     cache: "no-store",
@@ -63,6 +67,8 @@ export default async function ProductsPage({
           method="get"
           className="mt-6 flex flex-wrap items-end gap-4"
         >
+          <input type="hidden" name="limit" value={limit} />
+
           <div>
             <label
               htmlFor="product-filter-search"
@@ -114,6 +120,11 @@ export default async function ProductsPage({
           Showing {result.data.length} of {result.meta.total} products.
         </p>
 
+        <p className="mt-1 text-sm text-zinc-600">
+          Requested page: {result.meta.page}. Total pages:{" "}
+          {result.meta.totalPages}.
+        </p>
+
         {result.data.length === 0 ? (
           <p className="mt-6 text-zinc-600">No products found.</p>
         ) : (
@@ -134,6 +145,39 @@ export default async function ProductsPage({
             ))}
           </ul>
         )}
+
+        <nav
+          aria-label="Product pagination"
+          className="mt-6 flex gap-6 text-zinc-700"
+        >
+          {result.meta.page > 1 && result.meta.totalPages > 0 && (
+            <Link
+              href={buildProductsHref({
+                search,
+                active,
+                page: Math.min(result.meta.page - 1, result.meta.totalPages),
+                limit,
+              })}
+              className="underline"
+            >
+              Previous
+            </Link>
+          )}
+
+          {result.meta.page < result.meta.totalPages && (
+            <Link
+              href={buildProductsHref({
+                search,
+                active,
+                page: result.meta.page + 1,
+                limit,
+              })}
+              className="underline"
+            >
+              Next
+            </Link>
+          )}
+        </nav>
       </div>
     </main>
   );
