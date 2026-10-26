@@ -953,3 +953,36 @@ Executed by the learner; outputs reviewed:
 - Unit tests do not verify database persistence.
 - No stock-in endpoint or frontend form exists yet.
 - Stock-out concurrency protection remains deferred.
+
+## Task 33 — Stock-In API Endpoint
+
+### Completed
+
+- Added POST /api/products/{id}/stock-in.
+- Required an integer quantity between 1 and 2147483647.
+- Validated input through StockInInput.
+- Created and persisted movements using the stockIn factory.
+- Returned 201 with the saved movement.
+- Returned JSON errors for invalid requests and inactive products.
+
+### Verification
+
+Executed by the learner; outputs reviewed:
+
+- DTO tests passed: 5 tests, 10 assertions.
+- Full backend suite passed: 18 tests, 46 assertions.
+- Controller syntax, route, and container checks passed.
+- Doctrine mapping and database schema validation passed.
+- A stock-in request saved 10 units for product 2.
+- Invalid requests returned 400, 422, or 409 as expected.
+- Rejected requests left one movement totaling 10 units.
+- Product 2 was reactivated after verification.
+- Assistant reviewed the controller, DTO, and tests.
+
+### Decisions and limitations
+
+- API persistence was verified manually.
+- Automated database integration tests remain deferred.
+- Active status is checked on the loaded product.
+- Concurrent activation changes are not yet coordinated with movements.
+- Authentication, stock-out, and the frontend form remain deferred.

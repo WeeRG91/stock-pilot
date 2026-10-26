@@ -1,0 +1,121 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller;
+
+use App\Dto\StockInInput;
+use App\Entity\StockMovement;
+use App\Repository\ProductRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use DomainException;
+use JsonException;
+use stdClass;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+final class StockMovementController
+{
+    public function __construct(
+        private readonly ProductRepository $productRepository,
+        private readonly EntityManagerInterface $entityManager,
+    ) {}
+
+     #[Route(
+        '/api/products/{id}/stock-in',
+        name: 'api_products_stock_in',
+        requirements: ['id' => '\d+'],
+        methods: ['POST'],
+    )]
+    public function stockIn(
+        int $id,
+        Request $request,
+        ValidatorInterface $validator,
+    ): JsonResponse {
+        $product = $this->productRepository->find($id);
+
+        if ($product === null) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Product not found.']],
+                Response::HTTP_NOT_FOUND,
+            );
+        }
+
+        try {
+            $payload = json_decode(
+                $request->getContent(),
+                flags: JSON_THROW_ON_ERROR,
+            );
+        } catch (JsonException) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Request body must contain valid JSON.']],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        if (!$payload instanceof stdClass) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Request body must be a JSON object.']],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        if (!isset($payload->quantity) || !is_int($payload->quantity)) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Quantity must be provided as an integer.']],
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+            );
+        }
+
+        $input = new StockInInput($payload->quantity);
+        $violations = $validator->validate($input);
+
+        if (count($violations) > 0) {
+            $details = [];
+
+            foreach ($violations as $violation) {
+                $details[] = [
+                    'field' => $violation->getPropertyPath(),
+                    'message' => $violation->getMessage(),
+                ];
+            }
+
+            return new JsonResponse(
+                ['error' => [
+                    'message' => 'Validation failed.',
+                    'details' => $details,
+                ]],
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+            );
+        }
+
+        try {
+            $movement = StockMovement::stockIn(
+                $product,
+                $input->quantity,
+            );
+        } catch (DomainException $exception) {
+            return new JsonResponse(
+                ['error' => ['message' => $exception->getMessage()]],
+                Response::HTTP_CONFLICT,
+            );
+        }
+
+        $this->entityManager->persist($movement);
+        $this->entityManager->flush();
+
+        return new JsonResponse(
+            ['data' => [
+                'id' => $movement->getId(),
+                'productId' => $product->getId(),
+                'type' => $movement->getType()->value,
+                'quantity' => $movement->getQuantity(),
+                'createdAt' => $movement->getCreatedAt()->format(DATE_ATOM),
+            ]],
+            Response::HTTP_CREATED,
+        );
+    }
+}
