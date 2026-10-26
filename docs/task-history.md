@@ -883,3 +883,20 @@ Executed by the learner; outputs reviewed:
 - Fetch and redirect are mocked; validation helpers remain real.
 - Tests do not contact Symfony or write to PostgreSQL.
 - Database integration tests and authentication remain deferred.
+
+## Task 30 — Inventory Domain Design
+
+### Completed
+
+- Defined stock movements and whole-unit quantities.
+- Chose movement history as the source of current stock.
+- Documented rules for inactive products and insufficient stock.
+- Required preservation of movement history.
+- Identified transaction and locking requirements.
+- Recorded implementation order and deferred features.
+
+### Verification
+
+- Assistant reviewed docs/inventory-design.md.
+- Documentation only; no application code or database changes.
+- No automated tests required for this documentation change.
