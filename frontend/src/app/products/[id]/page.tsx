@@ -1,6 +1,8 @@
 import { getProduct } from "@/lib/getProduct.server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { setProductActivation } from "./activation-actions";
+import { ProductActivationControl } from "@/components/ProductActivationControl";
 
 export default async function ProductDetailsPage({
   params,
@@ -16,6 +18,12 @@ export default async function ProductDetailsPage({
   if (product === null) {
     notFound();
   }
+
+  const changeActivation = setProductActivation.bind(
+    null,
+    product.id,
+    !product.active,
+  )
 
   return (
     <main className="min-h-screen bg-zinc-50 px-6 py-12">
@@ -49,6 +57,12 @@ export default async function ProductDetailsPage({
             <dd>{product.active ? "Active" : "Inactive"}</dd>
           </div>
         </dl>
+
+        <ProductActivationControl
+          key={product.id}
+          active={product.active}
+          action={changeActivation}
+        />
       </div>
     </main>
   );

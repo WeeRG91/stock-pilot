@@ -770,3 +770,32 @@ Executed by the learner; outputs reviewed unless noted:
 - Full update flow remains manually verified.
 - Authentication and authorization remain deferred.
 - Earlier API and dependency limitations remain open.
+
+## Task 26 — Frontend Activation Controls
+
+### Completed
+
+- Added a Server Action requesting an explicit activation state.
+- Validated the returned product ID and status.
+- Added detail-page activation controls with pending and error feedback.
+- Refreshed detail and listing paths after successful changes.
+- Added four component tests.
+
+### Verification
+
+- Learner confirmed activation and deactivation update the displayed status.
+- Learner confirmed persistence after refresh and inactive-list filtering.
+- Learner confirmed backend-failure feedback without optimistic status changes.
+- Component tests passed: 4 tests; output reviewed.
+- Learner reported no errors for the final suite, lint, type check,
+  and production build. Final outputs were not shared.
+- Assistant inspected the action, component, and page wiring.
+
+### Decisions and limitations
+
+- Actions request a specific state rather than toggling database state blindly.
+- Status display comes from refreshed server data.
+- Failed requests require checking the product before retrying.
+- Component tests mock the action; full integration remains manually verified.
+- Authentication and authorization remain deferred.
+- Earlier API and dependency limitations remain open.
