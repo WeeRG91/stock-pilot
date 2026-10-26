@@ -799,3 +799,29 @@ Executed by the learner; outputs reviewed unless noted:
 - Component tests mock the action; full integration remains manually verified.
 - Authentication and authorization remain deferred.
 - Earlier API and dependency limitations remain open.
+
+## Task 27 — Testing the Activation Server Action
+
+### Completed
+
+- Added 15 isolated tests for the activation Server Action.
+- Mocked fetch and Next.js path revalidation.
+- Covered activation, deactivation, HTTP and network failures.
+- Covered malformed JSON, invalid data, and mismatched product ID or status.
+- Verified invalid input and missing configuration prevent API requests.
+- Restored mocked globals and environment variables after each test.
+
+### Verification
+
+Executed by the learner; outputs reviewed:
+
+- Frontend suite: 71 tests passed across 11 files.
+- ESLint and TypeScript checks passed.
+- Production build passed.
+
+### Decisions and limitations
+
+- Tests use the real product response parser.
+- API requests and path revalidation are mocked.
+- Live integration remains covered by earlier manual checks.
+- Database integration tests and authentication remain deferred.
