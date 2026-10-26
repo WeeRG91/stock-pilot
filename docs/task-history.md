@@ -825,3 +825,32 @@ Executed by the learner; outputs reviewed:
 - API requests and path revalidation are mocked.
 - Live integration remains covered by earlier manual checks.
 - Database integration tests and authentication remain deferred.
+
+## Task 28 — Testing Product Creation Submission
+
+### Completed
+
+- Added nine isolated tests for the product creation Server Action.
+- Verified invalid fields prevent API requests.
+- Covered duplicate SKUs and API validation errors.
+- Verified the POST request and successful redirect.
+- Covered unexpected HTTP responses, malformed JSON, invalid product
+  data, network failures, and missing configuration.
+- Verified submitted values are preserved after errors.
+
+### Verification
+
+- Learner reported all final checks passed:
+  - 80 tests across 12 files.
+  - ESLint.
+  - TypeScript.
+  - Production build.
+- Outputs for the first four creation-action tests were reviewed.
+- Final check outputs were not shared.
+
+### Decisions and limitations
+
+- Fetch and redirect are mocked; validation helpers remain real.
+- The success test verifies that the redirect signal escapes the action.
+- These tests do not contact Symfony or write to PostgreSQL.
+- Database integration tests and authentication remain deferred.
