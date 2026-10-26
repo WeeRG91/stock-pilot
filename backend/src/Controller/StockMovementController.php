@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Dto\StockInInput;
 use App\Entity\StockMovement;
 use App\Repository\ProductRepository;
+use App\Repository\StockMovementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use DomainException;
 use JsonException;
@@ -22,9 +23,36 @@ final class StockMovementController
     public function __construct(
         private readonly ProductRepository $productRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly StockMovementRepository $stockMovementRepository,
     ) {}
 
-     #[Route(
+    #[Route(
+        '/api/products/{id}/stock',
+        name: 'api_products_stock',
+        requirements: ['id' => '\d+'],
+        methods: ['GET'],
+    )]
+    public function stock(int $id): JsonResponse
+    {
+        $product = $this->productRepository->find($id);
+
+        if ($product === null) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Product not found.']],
+                Response::HTTP_NOT_FOUND,
+            );
+        }
+
+        return new JsonResponse(
+            ['data' => [
+                'productId' => $product->getId(),
+                'quantity' => $this->stockMovementRepository
+                    ->getCurrentStock($product),
+            ]],
+        );
+    }
+
+    #[Route(
         '/api/products/{id}/stock-in',
         name: 'api_products_stock_in',
         requirements: ['id' => '\d+'],
@@ -117,5 +145,45 @@ final class StockMovementController
             ]],
             Response::HTTP_CREATED,
         );
+    }
+
+    #[Route(
+        '/api/products/{id}/movements',
+        name: 'api_products_movements',
+        requirements: ['id' => '\d+'],
+        methods: ['GET'],
+    )]
+    public function movements(int $id): JsonResponse
+    {
+        $product = $this->productRepository->find($id);
+
+        if ($product === null) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Product not found.']],
+                Response::HTTP_NOT_FOUND,
+            );
+        }
+
+        $movements = $this->stockMovementRepository
+            ->findRecentForProduct($product);
+
+        $data = [];
+
+        foreach ($movements as $movement) {
+            $data[] = [
+                'id' => $movement->getId(),
+                'productId' => $product->getId(),
+                'type' => $movement->getType()->value,
+                'quantity' => $movement->getQuantity(),
+                'createdAt' => $movement->getCreatedAt()->format(DATE_ATOM),
+            ];
+        }
+
+        return new JsonResponse([
+            'data' => $data,
+            'meta' => [
+                'limit' => 20,
+            ],
+        ]);
     }
 }

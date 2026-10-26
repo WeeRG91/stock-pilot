@@ -11,8 +11,9 @@ use DomainException;
 use DateTimeZone;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\StockMovementRepository;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: StockMovementRepository::class)]
 #[ORM\Table(name: 'stock_movements')]
 class StockMovement
 {

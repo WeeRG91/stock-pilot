@@ -3,6 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { setProductActivation } from "./activation-actions";
 import { ProductActivationControl } from "@/components/ProductActivationControl";
+import { getProductStock } from "@/lib/getProductStock.server";
+import { getProductMovements } from "@/lib/getProductMovements.server";
+import { MovementHistory } from "@/components/MovementHistory";
 
 export default async function ProductDetailsPage({
   params,
@@ -20,6 +23,11 @@ export default async function ProductDetailsPage({
   if (product === null) {
     notFound();
   }
+
+  const [currentStock, movements] = await Promise.all([
+  getProductStock(product.id),
+  getProductMovements(product.id),
+]);
 
   const changeActivation = setProductActivation.bind(
     null,
@@ -76,6 +84,10 @@ export default async function ProductDetailsPage({
             <dt className="font-medium">Status</dt>
             <dd>{product.active ? "Active" : "Inactive"}</dd>
           </div>
+          <div>
+            <dt className="font-medium">Current stock</dt>
+            <dd>{currentStock.toLocaleString("en-GB")} units</dd>
+          </div>
         </dl>
 
         <ProductActivationControl
@@ -83,6 +95,8 @@ export default async function ProductDetailsPage({
           active={product.active}
           action={changeActivation}
         />
+
+        <MovementHistory movements={movements} />
       </div>
     </main>
   );

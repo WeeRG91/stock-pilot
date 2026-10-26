@@ -1017,3 +1017,37 @@ Executed by the learner; outputs reviewed:
 - The success query parameter is a display hint.
 - Movement history UI and request deduplication remain deferred.
 - The Server Action is not yet covered by isolated action tests.
+
+## Task 35 — Movement History and Current Stock
+
+### Completed
+
+- Added a StockMovement repository.
+- Calculated current stock from all movement quantities and directions.
+- Added read-only stock and recent-movement endpoints.
+- Limited recent history to 20 entries, ordered by timestamp and ID.
+- Displayed current stock and movement history on the product page.
+- Added response validation, parser tests, and history-display tests.
+
+### Verification
+
+- Stock API and direct SQL both returned 15 units for product 2.
+- Learner confirmed history and stock display worked.
+- Stock-response tests passed: 11 tests; output reviewed.
+- History-response tests passed: 16 tests; output reviewed.
+- History-display tests passed: two tests; output reviewed.
+- Learner reported remaining requested checks passed.
+- Expected frontend total: 158 tests across 19 files.
+- Expected backend total: 18 tests, 46 assertions.
+- Final suite, build, and schema-check outputs were not shared.
+- Assistant reviewed the repository, endpoints, and frontend wiring.
+
+### Decisions and limitations
+
+- Current stock includes all movements, regardless of the history limit.
+- Inactive products retain readable stock and history.
+- Dates are displayed in UTC.
+- Balance and history use separate reads and can briefly differ
+  during concurrent changes.
+- Full history pagination and automated database tests remain deferred.
+- Stock-out operations and concurrency protection remain deferred.

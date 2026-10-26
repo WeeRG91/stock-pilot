@@ -9,3 +9,14 @@ export type StockInMovement = {
 export type StockInResponse = {
   data: StockInMovement;
 };
+
+export type StockMovement = Omit<StockInMovement, "type"> & {
+  type: "in" | "out";
+};
+
+export type MovementHistoryResponse = {
+  data: StockMovement[];
+  meta: {
+    limit: number;
+  };
+};
