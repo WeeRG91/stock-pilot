@@ -9,17 +9,33 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use DomainException;
 use DateTimeZone;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\Entity]
+#[ORM\Table(name: 'stock_movements')]
 class StockMovement
 {
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(targetEntity: Product::class)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
     private Product $product;
 
+    #[ORM\Column(
+        type: Types::STRING,
+        length: 3,
+        enumType: StockMovementType::class,
+    )]
     private StockMovementType $type;
 
+    #[ORM\Column(type: Types::INTEGER)]
     private int $quantity;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private DateTimeImmutable $createdAt;
 
     private function __construct(

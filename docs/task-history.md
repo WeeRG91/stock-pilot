@@ -925,3 +925,31 @@ Executed by the learner; outputs reviewed:
 - Movements are not yet mapped or saved through Doctrine.
 - No stock-in endpoint or frontend form exists yet.
 - Stock-out behavior and concurrency protection remain deferred.
+
+## Task 32 — Stock Movement Mapping and Migration
+
+### Completed
+
+- Mapped StockMovement with Doctrine attributes.
+- Added a required ManyToOne relationship to Product.
+- Stored movement direction using a string-backed enum.
+- Added a migration for the stock_movements table.
+- Restricted deletion of products referenced by movements.
+- Added database checks for positive quantities and allowed types.
+
+### Verification
+
+- Doctrine recognized Product and StockMovement.
+- Migration syntax check passed.
+- Migration dry-run SQL was reviewed.
+- Learner reported successful migration and database checks.
+- Full backend suite passed: 13 tests, 36 assertions.
+- Final migration and constraint-query outputs were not shared.
+
+### Decisions and limitations
+
+- Timestamps are assigned in UTC by the application.
+- Custom check constraints are defined in the migration.
+- Unit tests do not verify database persistence.
+- No stock-in endpoint or frontend form exists yet.
+- Stock-out concurrency protection remains deferred.
