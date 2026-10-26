@@ -986,3 +986,34 @@ Executed by the learner; outputs reviewed:
 - Active status is checked on the loaded product.
 - Concurrent activation changes are not yet coordinated with movements.
 - Authentication, stock-out, and the frontend form remain deferred.
+
+## Task 34 — Stock-In Form in Next.js
+
+### Completed
+
+- Added the stock-in page and product-detail navigation link.
+- Hid the form for inactive products.
+- Added quantity parsing and runtime API-response validation.
+- Submitted numeric quantities through a Server Action.
+- Checked that returned product ID and quantity match the request.
+- Added pending, error, and success feedback.
+- Added 16 input tests, 16 response-parser tests, and two form tests.
+
+### Verification
+
+- Learner confirmed the browser submission and confirmation worked.
+- Response-parser tests passed: 16 tests; output reviewed.
+- Form tests passed: two tests; output reviewed.
+- Learner reported the remaining requested checks passed.
+- Expected full-suite count: 129 tests across 16 files.
+- Final suite and build outputs were not shared.
+- Assistant reviewed the page, action, form, and validation helpers.
+
+### Decisions and limitations
+
+- Form values remain strings until validated and converted.
+- Symfony remains responsible for business rules and persistence.
+- Pending feedback prevents repeated clicks, not duplicate requests.
+- The success query parameter is a display hint.
+- Movement history UI and request deduplication remain deferred.
+- The Server Action is not yet covered by isolated action tests.

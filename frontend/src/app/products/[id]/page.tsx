@@ -6,8 +6,10 @@ import { ProductActivationControl } from "@/components/ProductActivationControl"
 
 export default async function ProductDetailsPage({
   params,
+  searchParams,
 }: PageProps<"/products/[id]">) {
   const { id } = await params;
+  const query = await searchParams;
 
   if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id))) {
     notFound();
@@ -23,7 +25,7 @@ export default async function ProductDetailsPage({
     null,
     product.id,
     !product.active,
-  )
+  );
 
   return (
     <main className="min-h-screen bg-zinc-50 px-6 py-12">
@@ -36,12 +38,30 @@ export default async function ProductDetailsPage({
           {product.name}
         </h1>
 
+        {query.stockIn === "recorded" && (
+          <p
+            role="status"
+            className="mt-4 rounded-lg bg-green-50 p-4 text-green-800"
+          >
+            Stock received successfully.
+          </p>
+        )}
+
         <Link
           href={`/products/${product.id}/edit`}
           className="mt-4 inline-block text-zinc-700 underline"
         >
           Edit product
         </Link>
+
+        {product.active && (
+          <Link
+            href={`/products/${product.id}/stock-in`}
+            className="ml-4 mt-4 inline-block text-zinc-700 underline"
+          >
+            Record stock in
+          </Link>
+        )}
 
         <dl className="mt-6 space-y-4 text-zinc-900">
           <div>
