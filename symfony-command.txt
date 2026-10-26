@@ -79,6 +79,8 @@ npm.cmd run lint
 npx.cmd tsc --noEmit
 npm.cmd run build
 
+npx.cmd next typegen
+
 npm.cmd run test:run -- src/lib/parseProductListResponse.test.ts
 
 ORM pack

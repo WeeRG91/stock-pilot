@@ -737,3 +737,36 @@ Executed by the learner; outputs reviewed unless noted:
 - Full submission flow remains manually verified.
 - Authentication and authorization remain deferred.
 - Earlier API and dependency limitations remain open.
+
+## Task 25 — Frontend Product Editing
+
+### Completed
+
+- Added /products/[id]/edit with existing product data.
+- Extracted shared server-side product fetching.
+- Refactored creation and editing to use ProductForm.
+- Bound the product ID to an update Server Action.
+- Submitted PUT requests with shared validation-error handling.
+- Added an Edit link and two reusable-form tests.
+
+### Verification
+
+- Learner confirmed prefilled fields and successful update redirects.
+- Learner confirmed duplicate-SKU feedback and preserved input.
+- Learner confirmed rejected updates did not change the stored SKU.
+- Learner confirmed required-value and backend-failure handling.
+- Learner confirmed editing preserved inactive status and restored it afterward.
+- Form tests passed: 2 tests; output reviewed.
+- Learner reported no errors for the final suite, lint, type check,
+  and production build. Final outputs were not shared.
+- Assistant inspected the shared fetch, form, action, and page wiring.
+
+### Decisions and limitations
+
+- Product ID is bound to the action and validated again server-side.
+- Editing submits name and SKU only; activation remains separate.
+- Form state is initialized from props and keyed by product ID.
+- Server helper filename communicates intent but does not enforce isolation.
+- Full update flow remains manually verified.
+- Authentication and authorization remain deferred.
+- Earlier API and dependency limitations remain open.

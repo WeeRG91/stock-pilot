@@ -1,4 +1,4 @@
-import { parseProductResponse } from "@/lib/parseProductResponse";
+import { getProduct } from "@/lib/getProduct.server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -11,29 +11,11 @@ export default async function ProductDetailsPage({
     notFound();
   }
 
-  const apiUrl = process.env.STOCKPILOT_API_URL;
+  const product = await getProduct(id);
 
-  if (!apiUrl) {
-    throw new Error("STOCKPILOT_API_URL is not configured.");
-  }
-
-  const response = await fetch(new URL(`/api/products/${id}`, apiUrl), {
-    cache: "no-store",
-    headers: {
-      Accept: "application/json",
-    },
-  });
-
-  if (response.status === 404) {
+  if (product === null) {
     notFound();
   }
-
-  if (!response.ok) {
-    throw new Error("Unable to fetch product details.");
-  }
-
-  const payload: unknown = await response.json();
-  const { data: product } = parseProductResponse(payload);
 
   return (
     <main className="min-h-screen bg-zinc-50 px-6 py-12">
@@ -45,6 +27,13 @@ export default async function ProductDetailsPage({
         <h1 className="mt-6 text-3xl font-bold text-zinc-900">
           {product.name}
         </h1>
+
+        <Link
+          href={`/products/${product.id}/edit`}
+          className="mt-4 inline-block text-zinc-700 underline"
+        >
+          Edit product
+        </Link>
 
         <dl className="mt-6 space-y-4 text-zinc-900">
           <div>

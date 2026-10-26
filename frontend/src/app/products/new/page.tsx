@@ -1,5 +1,6 @@
-import { CreateProductForm } from "@/components/CreateProductForm";
+import { ProductForm } from "@/components/ProductForm";
 import Link from "next/link";
+import { createProduct } from "./actions";
 
 export default function NewProductPage() {
   return (
@@ -13,7 +14,12 @@ export default function NewProductPage() {
           Create product
         </h1>
 
-        <CreateProductForm />
+        <ProductForm 
+          action={createProduct}
+          initialValues={{name: "", sku: ""}}
+          submitLabel="Create product"
+          pendingLabel="Creating..."
+        />
       </div>
     </main>
   );

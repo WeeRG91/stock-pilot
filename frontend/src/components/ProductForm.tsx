@@ -1,23 +1,34 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { createProduct } from "@/app/products/new/actions";
-import type { ProductFormState } from "@/types/productForm";
+import type { ProductFormState, ProductFormValues } from "@/types/productForm";
 
-const initialState: ProductFormState = {
-  values: { name: "", sku: "" },
-  fieldErrors: {},
-  message: "",
+type ProductFormProps = {
+  action: (
+    previousState: ProductFormState,
+    formData: FormData,
+  ) => Promise<ProductFormState>;
+  initialValues: ProductFormValues;
+  submitLabel: string;
+  pendingLabel: string;
 };
 
-export function CreateProductForm() {
-  const [state, formAction, pending] = useActionState(
-    createProduct,
-    initialState,
-  );
+export function ProductForm({
+  action,
+  initialValues,
+  submitLabel,
+  pendingLabel,
+}: ProductFormProps) {
+  const initialState: ProductFormState = {
+    values: initialValues,
+    fieldErrors: {},
+    message: "",
+  };
 
-  const [name, setName] = useState("");
-  const [sku, setSku] = useState("");
+  const [state, formAction, pending] = useActionState(action, initialState);
+
+  const [name, setName] = useState(initialValues.name);
+  const [sku, setSku] = useState(initialValues.sku);
 
   return (
     <form action={formAction} className="mt-6 space-y-5">
@@ -90,7 +101,7 @@ export function CreateProductForm() {
           type="submit"
           className="rounded-lg bg-zinc-900 px-4 py-2 text-white disabled:opacity-50"
         >
-          {pending ? "Creating…" : "Create product"}
+          {pending ? pendingLabel : submitLabel}
         </button>
       </fieldset>
     </form>
