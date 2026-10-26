@@ -900,3 +900,28 @@ Executed by the learner; outputs reviewed:
 - Assistant reviewed docs/inventory-design.md.
 - Documentation only; no application code or database changes.
 - No automated tests required for this documentation change.
+
+## Task 31 — Stock-In Domain Behavior and Unit Tests
+
+### Completed
+
+- Added a string-backed enum for movement direction.
+- Added StockMovement with a named stockIn factory.
+- Required positive quantities and active products.
+- Assigned an immutable timestamp in UTC.
+- Added four unit tests for valid and rejected movements.
+
+### Verification
+
+- Enum syntax and Composer autoloading verified.
+- StockMovement syntax check passed.
+- Movement tests passed: 4 tests, 11 assertions.
+- Full backend suite passed: 13 tests, 36 assertions.
+- Assistant reviewed the implementation and tests.
+
+### Decisions and limitations
+
+- Movement objects expose no setters.
+- Movements are not yet mapped or saved through Doctrine.
+- No stock-in endpoint or frontend form exists yet.
+- Stock-out behavior and concurrency protection remain deferred.
