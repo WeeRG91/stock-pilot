@@ -1051,3 +1051,30 @@ Executed by the learner; outputs reviewed:
   during concurrent changes.
 - Full history pagination and automated database tests remain deferred.
 - Stock-out operations and concurrency protection remain deferred.
+
+## Task 36 — Stock-Out Rules and Unit Tests
+
+### Completed
+
+- Added a stockOut factory accepting the available balance.
+- Allowed issuing exactly the available stock.
+- Rejected insufficient stock and zero available stock.
+- Rejected nonpositive quantities, inactive products,
+  and negative supplied balances.
+- Added eight stock-out unit tests.
+
+### Verification
+
+Executed by the learner; outputs reviewed:
+
+- Movement tests passed: 12 tests, 29 assertions.
+- Full backend suite passed: 26 tests, 64 assertions.
+- Assistant reviewed the factory and tests.
+
+### Decisions and limitations
+
+- Movement quantities remain positive; direction determines their effect.
+- Available stock is supplied by the caller.
+- No stock-out movement was persisted during these tests.
+- The factory alone does not provide concurrency protection.
+- Transactional balance retrieval, locking, and the endpoint come next.

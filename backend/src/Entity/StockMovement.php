@@ -43,8 +43,7 @@ class StockMovement
         Product $product,
         StockMovementType $type,
         int $quantity,
-    )
-    {
+    ) {
         if ($quantity <= 0) {
             throw new InvalidArgumentException(
                 'Movement quantity must be positive.',
@@ -71,6 +70,32 @@ class StockMovement
         int $quantity,
     ): self {
         return new self($product, StockMovementType::In, $quantity);
+    }
+
+    public static function stockOut(
+        Product $product,
+        int $quantity,
+        int $availableStock,
+    ): self {
+        if ($availableStock < 0) {
+            throw new InvalidArgumentException(
+                'Available stock must not be negative.',
+            );
+        }
+
+        $movement = new self(
+            $product,
+            StockMovementType::Out,
+            $quantity,
+        );
+
+        if ($quantity > $availableStock) {
+            throw new DomainException(
+                'Insufficient stock.',
+            );
+        }
+
+        return $movement;
     }
 
     public function getId(): ?int
