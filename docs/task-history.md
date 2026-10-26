@@ -854,3 +854,32 @@ Executed by the learner; outputs reviewed:
 - The success test verifies that the redirect signal escapes the action.
 - These tests do not contact Symfony or write to PostgreSQL.
 - Database integration tests and authentication remain deferred.
+
+## Task 29 — Testing Product Updates
+
+### Completed
+
+- Added 15 isolated tests for the product update Server Action.
+- Verified the PUT request and successful redirect.
+- Covered missing products, duplicate SKUs, and validation errors.
+- Rejected responses containing a different product ID.
+- Covered HTTP failures, malformed JSON, invalid product data,
+  and network failures.
+- Verified invalid IDs and missing configuration prevent API requests.
+- Verified submitted edits are preserved after errors.
+
+### Verification
+
+- Outputs for the first six update-action tests were reviewed.
+- Learner reported all final checks passed:
+  - 95 tests across 13 files.
+  - ESLint.
+  - TypeScript.
+  - Production build.
+- Final check outputs were not shared.
+
+### Decisions and limitations
+
+- Fetch and redirect are mocked; validation helpers remain real.
+- Tests do not contact Symfony or write to PostgreSQL.
+- Database integration tests and authentication remain deferred.
