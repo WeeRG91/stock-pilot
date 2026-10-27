@@ -1152,3 +1152,31 @@ their final outputs were not shared.
 - Structured error codes remain deferred.
 - The success query parameter is a display hint.
 - Inventory Server Action tests and request deduplication remain deferred.
+
+## Task 39 — Testing Inventory Server Actions
+
+### Completed
+
+- Added 20 stock-out and 18 stock-in action tests.
+- Verified numeric request quantities, response matching,
+  page revalidation, and redirects.
+- Covered conflicts, validation errors, and missing products.
+- Verified invalid input and missing configuration prevent requests.
+- Verified uncertain results preserve input without automatic retries.
+
+### Verification
+
+- Learner executed the full suite: 212 tests across 22 files passed.
+- Assistant executed both inventory-action test files:
+  38 tests passed.
+- Assistant executed ESLint and TypeScript checks: passed.
+- Learner reported the production build passed.
+- Assistant created the stock-in action test at the learner's request.
+
+### Decisions and limitations
+
+- Fetch, redirects, and path revalidation are mocked.
+- Quantity readers and response parsers remain real.
+- Tests do not modify database records.
+- Database concurrency remains manually verified.
+- Kept test isolation despite the optional jsdom performance suggestion.
