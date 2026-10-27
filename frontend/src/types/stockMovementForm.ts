@@ -1,4 +1,4 @@
-export type StockInFormState = {
+export type StockMovementFormState = {
     values: {
         quantity: string;
     };

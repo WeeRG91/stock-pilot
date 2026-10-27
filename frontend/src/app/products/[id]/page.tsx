@@ -25,9 +25,9 @@ export default async function ProductDetailsPage({
   }
 
   const [currentStock, movements] = await Promise.all([
-  getProductStock(product.id),
-  getProductMovements(product.id),
-]);
+    getProductStock(product.id),
+    getProductMovements(product.id),
+  ]);
 
   const changeActivation = setProductActivation.bind(
     null,
@@ -55,6 +55,15 @@ export default async function ProductDetailsPage({
           </p>
         )}
 
+        {query.stockOut === "recorded" && (
+          <p
+            role="status"
+            className="mt-4 rounded-lg bg-green-50 p-4 text-green-800"
+          >
+            Stock issued successfully.
+          </p>
+        )}
+
         <Link
           href={`/products/${product.id}/edit`}
           className="mt-4 inline-block text-zinc-700 underline"
@@ -68,6 +77,15 @@ export default async function ProductDetailsPage({
             className="ml-4 mt-4 inline-block text-zinc-700 underline"
           >
             Record stock in
+          </Link>
+        )}
+
+        {product.active && currentStock > 0 && (
+          <Link
+            href={`/products/${product.id}/stock-out`}
+            className="ml-4 mt-4 inline-block text-zinc-700 underline"
+          >
+            Record stock out
           </Link>
         )}
 

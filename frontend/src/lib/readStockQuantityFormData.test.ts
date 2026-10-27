@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { readStockInFormData } from "./readStockInFormData";
+import { readStockQuantityFormData } from "./readStockQuantityFormData";
 
 test.each(["1", "10", "2147483647", " 10 "])(
   "accepts quantity %j and preserves the original text",
@@ -7,7 +7,7 @@ test.each(["1", "10", "2147483647", " 10 "])(
     const formData = new FormData();
     formData.set("quantity", quantity);
 
-    expect(readStockInFormData(formData)).toEqual({
+    expect(readStockQuantityFormData(formData)).toEqual({
       values: { quantity },
       fieldErrors: {},
       message: "",
@@ -21,7 +21,7 @@ test.each(["", "   ", "0", "-1", "1.5", "1e3", "01", "abc"])(
     const formData = new FormData();
     formData.set("quantity", quantity);
 
-    expect(readStockInFormData(formData)).toEqual({
+    expect(readStockQuantityFormData(formData)).toEqual({
       values: { quantity },
       fieldErrors: {
         quantity: "Enter a positive whole number.",
@@ -37,7 +37,7 @@ test.each(["2147483648", "9007199254740992"])(
     const formData = new FormData();
     formData.set("quantity", quantity);
 
-    const result = readStockInFormData(formData);
+    const result = readStockQuantityFormData(formData);
 
     expect(result.values.quantity).toBe(quantity);
     expect(result.fieldErrors.quantity).toBe(
@@ -47,7 +47,7 @@ test.each(["2147483648", "9007199254740992"])(
 );
 
 test("rejects a missing quantity", () => {
-  const result = readStockInFormData(new FormData());
+  const result = readStockQuantityFormData(new FormData());
 
   expect(result).toEqual({
     values: { quantity: "" },
@@ -62,7 +62,7 @@ test("rejects a file instead of quantity text", () => {
   const formData = new FormData();
   formData.set("quantity", new File(["10"], "quantity.txt"));
 
-  expect(readStockInFormData(formData)).toEqual({
+  expect(readStockQuantityFormData(formData)).toEqual({
     values: { quantity: "" },
     fieldErrors: {
       quantity: "Quantity must be provided as text.",

@@ -1,9 +1,9 @@
-import { StockInFormState } from "@/types/stockInForm";
+import type { StockMovementFormState } from "@/types/stockMovementForm";
 
-export function readStockInFormData(formData: FormData): StockInFormState {
+export function readStockQuantityFormData(formData: FormData): StockMovementFormState {
   const quantity = formData.get("quantity");
 
-  const state: StockInFormState = {
+  const state: StockMovementFormState = {
     values: {
       quantity: typeof quantity === "string" ? quantity : "",
     },

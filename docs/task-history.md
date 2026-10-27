@@ -1119,3 +1119,36 @@ their final outputs were not shared.
 - Automated database concurrency tests remain deferred.
 - No stock-out frontend exists yet.
 - Request deduplication and explicit lock-timeout handling remain deferred.
+
+## Task 38 — Stock-Out Form in Next.js
+
+### Completed
+
+- Added the stock-out page and product-detail navigation link.
+- Shared quantity parsing, form state, and the movement form.
+- Extracted a reusable movement type guard.
+- Added stock-out response validation and 15 parser tests.
+- Handled insufficient stock, inactive products, and uncertain results.
+- Added stock-out form coverage and success feedback.
+- Refreshed stock and history after confirmed submission.
+
+### Verification
+
+- Stock-out parser tests passed: 15 tests; output reviewed.
+- Shared form tests passed: three tests; output reviewed.
+- Quantity-parser and existing stock-in tests remained passing.
+- Insufficient-stock submission left four units and five movements.
+- Learner confirmed successful issue and refreshed stock/history.
+- Learner reported final requested checks passed.
+- Expected frontend total: 174 tests across 20 files.
+- Final suite and build outputs were not shared.
+- Assistant reviewed the action, page, shared form, and renames.
+
+### Decisions and limitations
+
+- Displayed availability is informational; Symfony checks the balance.
+- The action never submits an authoritative available balance.
+- Known conflict responses are matched by backend message text.
+- Structured error codes remain deferred.
+- The success query parameter is a display hint.
+- Inventory Server Action tests and request deduplication remain deferred.

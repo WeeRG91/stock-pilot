@@ -20,3 +20,11 @@ export type MovementHistoryResponse = {
     limit: number;
   };
 };
+
+export type StockOutMovement = Omit<StockMovement, "type"> & {
+  type: "out";
+};
+
+export type StockOutResponse = {
+  data: StockOutMovement;
+};

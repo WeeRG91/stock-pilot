@@ -1,17 +1,17 @@
 "use server";
 
 import { parseStockInResponse } from "@/lib/parseStockInResponse";
-import { readStockInFormData } from "@/lib/readStockInFormData";
-import { StockInFormState } from "@/types/stockInForm";
+import { readStockQuantityFormData } from "@/lib/readStockQuantityFormData";
+import { StockMovementFormState } from "@/types/stockMovementForm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function recordStockIn(
   productId: number,
-  _previousState: StockInFormState,
+  _previousState: StockMovementFormState,
   formData: FormData,
-): Promise<StockInFormState> {
-  const state = readStockInFormData(formData);
+): Promise<StockMovementFormState> {
+  const state = readStockQuantityFormData(formData);
 
   if (!Number.isSafeInteger(productId) || productId < 1) {
     return {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { StockInForm } from "@/components/StockInForm";
+import { StockMovementForm } from "@/components/StockMovementForm";
 import { getProduct } from "@/lib/getProduct.server";
 import { recordStockIn } from "./action";
 
@@ -40,8 +40,9 @@ export default async function StockInPage({
         </p>
 
         {product.active ? (
-          <StockInForm
+          <StockMovementForm
             key={product.id}
+            direction="in"
             action={recordStockInForProduct}
           />
         ) : (
