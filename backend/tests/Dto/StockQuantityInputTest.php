@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Dto;
 
-use App\Dto\StockInInput;
+use App\Dto\StockQuantityInput;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Validation;
 
-final class StockInInputTest extends TestCase
+final class StockQuantityInputTest extends TestCase
 {
     public function testAcceptsPositiveQuantity(): void
     {
-        $input = new StockInInput(10);
+        $input = new StockQuantityInput(10);
 
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()
@@ -24,7 +24,7 @@ final class StockInInputTest extends TestCase
 
     public function testAcceptsMaximumDatabaseInteger(): void
     {
-        $input = new StockInInput(2147483647);
+        $input = new StockQuantityInput(2147483647);
 
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()
@@ -35,7 +35,7 @@ final class StockInInputTest extends TestCase
 
     public function testRejectsZeroQuantity(): void
     {
-        $input = new StockInInput(0);
+        $input = new StockQuantityInput(0);
 
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()
@@ -53,7 +53,7 @@ final class StockInInputTest extends TestCase
 
     public function testRejectsNegativeQuantity(): void
     {
-        $input = new StockInInput(-5);
+        $input = new StockQuantityInput(-5);
 
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()
@@ -70,7 +70,7 @@ final class StockInInputTest extends TestCase
 
     public function testRejectsQuantityAboveDatabaseMaximum(): void
     {
-        $input = new StockInInput(2147483648);
+        $input = new StockQuantityInput(2147483648);
 
         $validator = Validation::createValidatorBuilder()
             ->enableAttributeMapping()

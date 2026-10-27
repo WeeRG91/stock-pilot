@@ -13,6 +13,7 @@ use App\Dto\ProductDetailsInput;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\DBAL\LockMode;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -319,7 +320,32 @@ final class ProductController
 
     private function changeActivation(int $id, bool $active): JsonResponse
     {
-        $product = $this->entityManager->find(Product::class, $id);
+        $product = $this->entityManager->wrapInTransaction(
+            function () use ($id, $active): ?Product {
+                $product = $this->entityManager->find(
+                    Product::class,
+                    $id,
+                    LockMode::PESSIMISTIC_WRITE,
+                );
+
+                if ($product === null) {
+                    return null;
+                }
+
+                $this->entityManager->refresh(
+                    $product,
+                    LockMode::PESSIMISTIC_WRITE,
+                );
+
+                if ($active) {
+                    $product->activate();
+                } else {
+                    $product->deactivate();
+                }
+
+                return $product;
+            }
+        );
 
         if ($product === null) {
             return new JsonResponse(
@@ -327,14 +353,6 @@ final class ProductController
                 Response::HTTP_NOT_FOUND,
             );
         }
-
-        if ($active) {
-            $product->activate();
-        } else {
-            $product->deactivate();
-        }
-
-        $this->entityManager->flush();
 
         return new JsonResponse([
             'data' => [

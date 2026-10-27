@@ -6,7 +6,7 @@ namespace App\Dto;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class StockInInput
+final class StockQuantityInput
 {
     #[Assert\Positive(message: 'Quantity must be positive.')]
     #[Assert\LessThanOrEqual(

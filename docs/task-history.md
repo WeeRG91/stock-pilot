@@ -1078,3 +1078,44 @@ Executed by the learner; outputs reviewed:
 - No stock-out movement was persisted during these tests.
 - The factory alone does not provide concurrency protection.
 - Transactional balance retrieval, locking, and the endpoint come next.
+
+## Task 37 — Transactional Stock-Out API and Locking
+
+### Completed
+
+- Added POST /api/products/{id}/stock-out.
+- Renamed StockInInput to StockQuantityInput for both directions.
+- Extracted shared request parsing and validation.
+- Added a service coordinating movement transactions and persistence.
+- Locked and refreshed the product before checking its state.
+- Calculated available stock after acquiring the product lock.
+- Applied the same locking protocol to stock-in and activation changes.
+
+### Verification
+
+Outputs reviewed:
+
+- Backend suite passed: 26 tests, 64 assertions.
+- A stock-out of four units was saved successfully.
+- Insufficient stock returned 409 without adding a movement.
+- PostgreSQL reported read committed isolation.
+- A waiting API transaction was observed through pg_stat_activity.
+- After lock release, the request completed with 409.
+- A controlled SQL transaction committed an eight-unit stock-out.
+- The subsequent API result rejected four units against a balance of three.
+- Database checks confirmed three units and four movements at that point.
+
+Learner reported the remaining regression, suite, and schema checks passed;
+their final outputs were not shared.
+
+### Decisions and limitations
+
+- Transactions commit and flush through Doctrine wrapInTransaction.
+- Domain failures roll back before the controller returns 409.
+- Quantity validation runs before product lookup for both movement endpoints.
+- Locking depends on all application writers following the same protocol.
+- Contention was manually tested against a SQL-held lock.
+- Two simultaneous HTTP stock-out requests were not directly tested.
+- Automated database concurrency tests remain deferred.
+- No stock-out frontend exists yet.
+- Request deduplication and explicit lock-timeout handling remain deferred.
