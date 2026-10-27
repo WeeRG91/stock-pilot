@@ -1455,3 +1455,43 @@ Assistant reviewed the configuration, controller, and tests.
 - Generating a token does not authenticate a user.
 - Existing mutations do not yet enforce CSRF validation.
 - Login, logout, and API enforcement remain pending.
+
+## Task 48 — Session Login API
+
+### Completed
+
+- Added a session-based JSON login authenticator.
+- Added POST /api/auth/login and GET /api/auth/me.
+- Required a session-bound authenticate CSRF token for login.
+- Added login throttling: five attempts per minute.
+- Returned uncached JSON authentication responses.
+- Added authenticator and anonymous endpoint tests.
+- Fixed Windows hidden-password input retaining its terminal newline.
+- Added an explicit --reset-password provisioning option.
+
+### Verification
+
+Outputs reviewed:
+
+- Successful login returned 200 with the expected email and ROLE_USER.
+- Session ID changed after login.
+- A subsequent /api/auth/me request returned 200.
+- Anonymous account access returned 401.
+- Missing login CSRF returned 403.
+- Five incorrect-password attempts returned 401; the sixth returned 429.
+- Authenticator tests passed: 15 tests, 35 assertions.
+- Authentication endpoint tests passed: two tests, 12 assertions.
+- Existing command tests passed: two tests, four assertions.
+
+Learner reported final suite and container checks passed by proceeding
+without reporting errors. Expected suite: 67 tests, 164 assertions.
+Assistant reviewed the implementation and tests.
+
+### Decisions and limitations
+
+- Password normalization removes terminal CR/LF while preserving spaces.
+- Resetting the local password preserved the existing user identity.
+- Successful database authentication and throttling were checked manually.
+- Automated database authentication tests remain deferred.
+- Inventory endpoints remain public at this stage.
+- Logout, mutation CSRF enforcement, and frontend login remain pending.

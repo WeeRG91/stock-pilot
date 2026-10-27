@@ -14,6 +14,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -39,6 +40,13 @@ final class CreateUserCommand extends Command
             'email',
             InputArgument::REQUIRED,
             'Email address for the new user',
+        );
+
+        $this->addOption(
+            'reset-password',
+            null,
+            InputOption::VALUE_NONE,
+            'Replace the password of an existing user',
         );
     }
 
@@ -66,16 +74,33 @@ final class CreateUserCommand extends Command
             'email' => $user->getEmail(),
         ]);
 
+        $resetPassword = (bool) $input->getOption('reset-password');
+
         if ($existing !== null) {
-            $io->error('A user with this email already exists.');
+            if (!$resetPassword) {
+                $io->error('A user with this email already exists.');
+
+                return Command::FAILURE;
+            }
+
+            $user = $existing;
+        } elseif ($resetPassword) {
+            $io->error('No user with this email exists.');
 
             return Command::FAILURE;
         }
+
+        $normalizePasswordInput = static function (mixed $value): mixed {
+            return is_string($value)
+                ? rtrim($value, "\r\n")
+                : $value;
+        };
 
         $passwordQuestion = new Question('Password (12–128 characters)');
         $passwordQuestion->setHidden(true);
         $passwordQuestion->setHiddenFallback(false);
         $passwordQuestion->setTrimmable(false);
+        $passwordQuestion->setNormalizer($normalizePasswordInput);
         $passwordQuestion->setMaxAttempts(3);
         $passwordQuestion->setValidator(
             static function (mixed $value): string {
@@ -99,6 +124,7 @@ final class CreateUserCommand extends Command
         $confirmationQuestion->setHidden(true);
         $confirmationQuestion->setHiddenFallback(false);
         $confirmationQuestion->setTrimmable(false);
+        $confirmationQuestion->setNormalizer($normalizePasswordInput);
         $confirmationQuestion->setMaxAttempts(3);
         $confirmationQuestion->setValidator(
             static function (mixed $value) use ($password): string {
@@ -128,7 +154,9 @@ final class CreateUserCommand extends Command
         }
 
         $io->success(sprintf(
-            'Created user #%d: %s',
+            $resetPassword
+                ? 'Updated password for user #%d: %s'
+                : 'Created user #%d: %s',
             $user->getId(),
             $user->getEmail(),
         ));
