@@ -64,11 +64,27 @@ export default async function ProductDetailsPage({
           </p>
         )}
 
+        {query.threshold === "updated" && (
+          <p
+            role="status"
+            className="mt-4 rounded-lg bg-green-50 p-4 text-green-800"
+          >
+            Low-stock threshold updated.
+          </p>
+        )}
+
         <Link
           href={`/products/${product.id}/edit`}
           className="mt-4 inline-block text-zinc-700 underline"
         >
           Edit product
+        </Link>
+
+        <Link
+          href={`/products/${product.id}/low-stock-threshold`}
+          className="ml-4 mt-4 inline-block text-zinc-700 underline"
+        >
+          Edit low-stock threshold
         </Link>
 
         {product.active && (

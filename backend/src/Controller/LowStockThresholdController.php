@@ -24,6 +24,31 @@ final class LowStockThresholdController
 
     #[Route(
         '/api/products/{id}/low-stock-threshold',
+        name: 'api_products_low_stock_threshold_show',
+        requirements: ['id' => '\d+'],
+        methods: ['GET'],
+    )]
+    public function show(int $id): JsonResponse
+    {
+        $product = $this->productRepository->find($id);
+
+        if ($product === null) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Product not found.']],
+                Response::HTTP_NOT_FOUND,
+            );
+        }
+
+        return new JsonResponse([
+            'data' => [
+                'productId' => $product->getId(),
+                'threshold' => $product->getLowStockThreshold(),
+            ],
+        ]);
+    }
+
+    #[Route(
+        '/api/products/{id}/low-stock-threshold',
         name: 'api_products_low_stock_threshold_update',
         requirements: ['id' => '\d+'],
         methods: ['PUT'],

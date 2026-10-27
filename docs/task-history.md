@@ -1258,3 +1258,38 @@ Final suite, build, and schema-check outputs were not shared.
 - Dashboard queries use separate database snapshots.
 - Database query and endpoint behavior remain manually verified.
 - Assistant reviewed the final implementation.
+
+## Task 42 — Edit Low-Stock Thresholds in Next.js
+
+### Completed
+
+- Added a GET endpoint for the saved threshold.
+- Added response validation and form-data parsing.
+- Added a prefilled threshold settings page and product-page link.
+- Saved numeric thresholds through a Server Action.
+- Refreshed the product page and dashboard after success.
+- Added 14 response-parser tests, 16 input-parser tests,
+  and four form tests.
+
+### Verification
+
+- GET endpoint returned the saved threshold of five.
+- Learner confirmed saving, dashboard-count changes,
+  zero handling, and restoring the threshold to five.
+- Response-parser tests passed: 14 tests; output reviewed.
+- Input-parser tests passed: 16 tests; output reviewed.
+- Form tests passed: four tests; output reviewed.
+- Learner reported remaining final checks passed.
+- Expected frontend total: 265 tests across 27 files.
+- Expected backend total: 35 tests, 79 assertions.
+- Final suite, build, and schema-check outputs were not shared.
+- Assistant reviewed the implementation.
+
+### Decisions and limitations
+
+- Zero is a valid threshold; null represents a missing product.
+- Thresholds remain configurable for inactive products.
+- Setting changes do not create stock movements.
+- The success query parameter is a display hint.
+- The threshold Server Action is not yet covered by isolated tests.
+- Authentication and authorization remain deferred.
