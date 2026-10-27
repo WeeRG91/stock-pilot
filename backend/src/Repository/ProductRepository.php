@@ -18,6 +18,33 @@ final class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    public function getDashboardCounts(): array
+    {
+        $result = $this->createQueryBuilder('product')
+            ->select('COUNT(product.id) AS totalCount')
+            ->addSelect(
+                'COALESCE(SUM(
+                CASE
+                    WHEN product.active = :active
+                    THEN 1
+                    ELSE 0
+                END
+            ), 0) AS activeCount',
+            )
+            ->setParameter('active', true)
+            ->getQuery()
+            ->getSingleResult();
+
+        $total = (int) $result['totalCount'];
+        $active = (int) $result['activeCount'];
+
+        return [
+            'total' => $total,
+            'active' => $active,
+            'inactive' => $total - $active,
+        ];
+    }
+
     /**
      * @return array{items: list<Product>, total: int}
      */

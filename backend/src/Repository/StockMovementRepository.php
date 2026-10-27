@@ -32,6 +32,21 @@ final class StockMovementRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @return list<StockMovement>
+     */
+    public function findRecentForDashboard(): array
+    {
+        return $this->createQueryBuilder('movement')
+            ->innerJoin('movement.product', 'product')
+            ->addSelect('product')
+            ->orderBy('movement.createdAt', 'DESC')
+            ->addOrderBy('movement.id', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getCurrentStock(Product $product): int
     {
         $result = $this->createQueryBuilder('movement')
@@ -47,6 +62,25 @@ final class StockMovementRepository extends ServiceEntityRepository
             ->andWhere('movement.product = :product')
             ->setParameter('stockIn', StockMovementType::In->value)
             ->setParameter('product', $product)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int) $result;
+    }
+
+    public function getTotalStock(): int
+    {
+        $result = $this->createQueryBuilder('movement')
+            ->select(
+                'COALESCE(SUM(
+                CASE
+                    WHEN movement.type = :stockIn
+                    THEN movement.quantity
+                    ELSE -movement.quantity
+                END
+            ), 0)',
+            )
+            ->setParameter('stockIn', StockMovementType::In->value)
             ->getQuery()
             ->getSingleScalarResult();
 

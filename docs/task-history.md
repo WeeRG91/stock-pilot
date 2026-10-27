@@ -1180,3 +1180,41 @@ their final outputs were not shared.
 - Tests do not modify database records.
 - Database concurrency remains manually verified.
 - Kept test isolation despite the optional jsdom performance suggestion.
+
+## Task 40 — Dashboard with Real Data
+
+### Completed
+
+- Added GET /api/dashboard.
+- Calculated total, active, and inactive product counts.
+- Calculated total units across all products.
+- Loaded the five latest movements with their products in one query.
+- Replaced sample overview values with validated API data.
+- Added product links, UTC timestamps, and movement directions.
+- Added loading and recoverable error feedback.
+- Added 12 parser tests and two display tests.
+
+### Verification
+
+- Product counts matched direct SQL: three total, three active,
+  zero inactive.
+- Total stock matched direct SQL: three units.
+- Dashboard API response was reviewed.
+- Learner confirmed summary cards, movement links, and error recovery.
+- Parser tests passed: 12 tests; output reviewed.
+- Display tests passed: two tests; output reviewed.
+- Learner reported remaining final checks passed.
+- Expected frontend total: 226 tests across 24 files.
+- Expected backend total: 26 tests, 64 assertions.
+- Final suite, build, and schema-check outputs were not shared.
+- Assistant reviewed the implementation.
+
+### Decisions and limitations
+
+- Stock totals include inactive products.
+- Dashboard sections use separate queries, not one consistent snapshot.
+- Product names and SKUs reflect current product details.
+- Low-stock reporting awaits a threshold rule.
+- Inventory valuation awaits pricing.
+- Dashboard database queries remain manually verified.
+- The unused sample low-stock component remains as a learning example.
