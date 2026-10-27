@@ -11,6 +11,7 @@ export type DashboardResponse = {
       total: number;
       active: number;
       inactive: number;
+      lowStock: number;
     };
     stock: {
       totalUnits: number;

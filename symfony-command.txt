@@ -112,6 +112,9 @@ php bin/console doctrine:migrations:migrate
 php bin/console doctrine:migrations:status
 php bin/console doctrine:schema:validate
 
+php bin/console doctrine:query:sql "SELECT id, name, low_stock_threshold FROM products ORDER BY id"
+php bin/console doctrine:query:sql "SELECT conname, pg_get_constraintdef(oid) AS definition FROM pg_constraint WHERE conrelid = 'public.products'::regclass AND conname = 'chk_products_low_stock_threshold_nonnegative'"
+
 Command
 php -l src/Command/CreateSampleProductCommand.php
 php bin/console app:create-sample-product --help

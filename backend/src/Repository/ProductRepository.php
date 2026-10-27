@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Product;
+use App\Enum\StockMovementType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -43,6 +44,36 @@ final class ProductRepository extends ServiceEntityRepository
             'active' => $active,
             'inactive' => $total - $active,
         ];
+    }
+
+    public function countLowStockProducts(): int
+    {
+        $sql = <<<'SQL'
+        SELECT COUNT(*)
+        FROM products product
+        WHERE product.active = TRUE
+          AND COALESCE(
+              (
+                  SELECT SUM(
+                      CASE
+                          WHEN movement.type = :stockIn
+                          THEN movement.quantity
+                          ELSE -movement.quantity
+                      END
+                  )
+                  FROM stock_movements movement
+                  WHERE movement.product_id = product.id
+              ),
+              0
+          ) <= product.low_stock_threshold
+        SQL;
+
+    return (int) $this->getEntityManager()
+        ->getConnection()
+        ->fetchOne(
+            $sql,
+            ['stockIn' => StockMovementType::In->value],
+        );
     }
 
     /**

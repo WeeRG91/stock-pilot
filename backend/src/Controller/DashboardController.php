@@ -35,9 +35,12 @@ final class DashboardController
             ];
         }
 
+        $productCounts = $this->productRepository->getDashboardCounts();
+        $productCounts['lowStock'] = $this->productRepository->countLowStockProducts();
+
         return new JsonResponse([
             'data' => [
-                'products' => $this->productRepository->getDashboardCounts(),
+                'products' => $productCounts,
                 'stock' => [
                     'totalUnits' => $this->movementRepository->getTotalStock(),
                 ],

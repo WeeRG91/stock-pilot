@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProductRepository;
+use InvalidArgumentException;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: 'products')]
@@ -24,6 +25,9 @@ class Product
 
     #[ORM\Column]
     private bool $active = true;
+
+    #[ORM\Column]
+    private int $lowStockThreshold = 0;
 
     public function __construct(string $name, string $sku)
     {
@@ -65,5 +69,21 @@ class Product
     public function deactivate(): void
     {
         $this->active = false;
+    }
+
+    public function getLowStockThreshold(): int
+    {
+        return $this->lowStockThreshold;
+    }
+
+    public function updateLowStockThreshold(int $threshold): void
+    {
+        if ($threshold < 0 || $threshold > 2147483647) {
+            throw new InvalidArgumentException(
+                'Low-stock threshold must be between 0 and 2147483647.',
+            );
+        }
+
+        $this->lowStockThreshold = $threshold;
     }
 }

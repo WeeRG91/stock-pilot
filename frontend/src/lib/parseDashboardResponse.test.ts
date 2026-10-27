@@ -13,7 +13,7 @@ const movement = {
 
 const validResponse = {
   data: {
-    products: { total: 3, active: 3, inactive: 0 },
+    products: { total: 3, active: 3, inactive: 0, lowStock: 3},
     stock: { totalUnits: 3 },
     recentMovements: [movement],
   },
@@ -27,7 +27,7 @@ test("accepts a valid dashboard response", () => {
 test("accepts an empty inventory", () => {
   const payload = {
     data: {
-      products: { total: 0, active: 0, inactive: 0 },
+      products: { total: 0, active: 0, inactive: 0, lowStock: 0 },
       stock: { totalUnits: 0 },
       recentMovements: [],
     },
@@ -52,7 +52,7 @@ test.each([
       ...validResponse,
       data: {
         ...validResponse.data,
-        products: { total: 3, active: 4, inactive: -1 },
+        products: { total: 3, active: 4, inactive: -1, lowStock: 0 },
       },
     },
   },
@@ -62,7 +62,7 @@ test.each([
       ...validResponse,
       data: {
         ...validResponse.data,
-        products: { total: 3, active: 2, inactive: 0 },
+        products: { total: 3, active: 2, inactive: 0, lowStock: 0 },
       },
     },
   },
@@ -128,6 +128,27 @@ test.each([
     },
   },
 ])("rejects $description", ({ payload }) => {
+  expect(() => parseDashboardResponse(payload)).toThrow(
+    "Invalid dashboard response.",
+  );
+});
+
+test.each([
+  { description: "an undefined count", value: undefined },
+  { description: "a negative count", value: -1 },
+  { description: "a count exceeding active products", value: 4 },
+])("rejects low-stock data with $description", ({ value }) => {
+  const payload = {
+    ...validResponse,
+    data: {
+      ...validResponse.data,
+      products: {
+        ...validResponse.data.products,
+        lowStock: value,
+      },
+    },
+  };
+
   expect(() => parseDashboardResponse(payload)).toThrow(
     "Invalid dashboard response.",
   );

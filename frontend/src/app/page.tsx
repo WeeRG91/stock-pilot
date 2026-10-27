@@ -1,4 +1,5 @@
 import { DashboardMovements } from "@/components/DashboardMovement";
+import { LowStockSummary } from "@/components/LowStockSummary";
 import { SummaryCard } from "@/components/SummaryCard";
 import { getDashboard } from "@/lib/getDashboard.server";
 
@@ -34,6 +35,8 @@ export default async function Home() {
             description="Across all products, including inactive products."
           />
         </div>
+
+        <LowStockSummary value={data.products.lowStock} />
 
         <DashboardMovements movements={data.recentMovements} />
       </div>

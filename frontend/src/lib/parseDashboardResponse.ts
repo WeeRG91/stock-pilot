@@ -62,6 +62,9 @@ export function parseDashboardResponse(
     !("inactive" in products) ||
     !isNonnegativeInteger(products.inactive) ||
     products.active + products.inactive !== products.total ||
+    !("lowStock" in products) ||
+    !isNonnegativeInteger(products.lowStock) ||
+    products.lowStock > products.active ||
     typeof stock !== "object" ||
     stock === null ||
     Array.isArray(stock) ||
@@ -80,6 +83,7 @@ export function parseDashboardResponse(
         total: products.total,
         active: products.active,
         inactive: products.inactive,
+        lowStock: products.lowStock,
       },
       stock: {
         totalUnits: stock.totalUnits,

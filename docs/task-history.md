@@ -1218,3 +1218,43 @@ their final outputs were not shared.
 - Inventory valuation awaits pricing.
 - Dashboard database queries remain manually verified.
 - The unused sample low-stock component remains as a learning example.
+
+## Task 41 — Low-Stock Thresholds
+
+### Completed
+
+- Added a product threshold with default zero and domain validation.
+- Added a migration initializing existing products and preventing
+  negative thresholds.
+- Added a validated threshold-update API endpoint.
+- Counted active products at or below their threshold using DBAL.
+- Connected the dashboard widget to the real count.
+- Extended dashboard-response validation and tests.
+
+### Verification
+
+Outputs reviewed:
+
+- Product tests passed: 10 tests, 19 assertions.
+- Backend suite before DTO additions passed: 32 tests, 72 assertions.
+- Threshold DTO tests passed: three tests, seven assertions.
+- Migration dry-run SQL was reviewed.
+- Valid threshold updates returned 200; invalid values returned 422.
+- Rejected updates preserved the stored threshold.
+- Dashboard parser tests passed: 15 tests.
+- Low-stock widget tests passed: three tests.
+- Final API response showed three active and three low-stock products.
+
+Learner reported remaining requested checks passed.
+Expected final totals: 35 backend tests with 79 assertions,
+and 231 frontend tests across 24 files.
+Final suite, build, and schema-check outputs were not shared.
+
+### Decisions and limitations
+
+- Equality counts as low stock; zero-stock products are included.
+- Inactive products are excluded.
+- Threshold configuration currently uses the API.
+- Dashboard queries use separate database snapshots.
+- Database query and endpoint behavior remain manually verified.
+- Assistant reviewed the final implementation.

@@ -57,3 +57,14 @@ locking strategy so concurrent requests cannot produce negative stock.
 - Locations and warehouses.
 - Purchase costs and inventory valuation.
 - Recording the authenticated user responsible for each movement.
+
+## Low-stock thresholds
+
+- Each product has a threshold, initially zero.
+- Thresholds are integers between 0 and 2147483647.
+- An active product is low stock when its balance is at or below
+  its threshold.
+- Products without movements have a balance of zero.
+- Inactive products are excluded from low-stock reporting.
+- Thresholds are warnings; they do not restrict valid stock operations.
+- Changing a threshold does not change stock or movement history.

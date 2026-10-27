@@ -31,3 +31,14 @@ test("allows the user to hide and show the low-stock summary", async () => {
   expect(button).toHaveAccessibleName("Hide low-stock summary");
   expect(button).toHaveAttribute("aria-expanded", "true");
 });
+
+test.each([0, 3])("displays the supplied low-stock count %s", (value) => {
+  render(<LowStockSummary value={value} />);
+
+  expect(screen.getByText(String(value))).toBeVisible();
+  expect(
+    screen.getByText(
+      "Active products at or below their threshold, including out-of-stock products.",
+    ),
+  ).toBeVisible();
+});

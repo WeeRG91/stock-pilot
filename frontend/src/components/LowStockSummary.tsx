@@ -26,7 +26,7 @@ export function LowStockSummary({ value }: LowStockSummaryProps) {
         <SummaryCard
           title="Low-stock products"
           value={value}
-          description="Sample products below their stock threshold."
+          description="Active products at or below their threshold, including out-of-stock products."
         />
       </div>
     </section>
