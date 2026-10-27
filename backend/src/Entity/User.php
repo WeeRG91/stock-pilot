@@ -42,6 +42,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->email = $email;
     }
 
+    public function __serialize(): array
+    {
+        $data = (array) $this;
+
+        $data["\0" . self::class . "\0password"] =
+            $this->password === null
+            ? null
+            : hash('crc32c', $this->password);
+
+        return $data;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

@@ -1390,3 +1390,32 @@ Assistant reviewed the command and tests.
 - Automated command tests exit before database access.
 - Successful provisioning and duplicate detection were manually verified.
 - Login, safe session serialization, and access restrictions remain pending.
+
+## Task 46 — Safe User Session Serialization
+
+### Completed
+
+- Added User::__serialize().
+- Replaced the serialized password hash with Symfony's supported
+  CRC32C fingerprint.
+- Preserved null for users without an assigned password.
+- Added three serialization tests.
+
+### Verification
+
+Executed by the learner; outputs reviewed:
+
+- User syntax check passed.
+- Serialization tests passed: three tests, 10 assertions.
+- Full backend suite passed: 47 tests, 106 assertions.
+- Tests verified the original object's hash remains unchanged.
+- Tests verified restored identity, roles, and null-password handling.
+- Assistant reviewed the implementation and tests.
+
+### Decisions and limitations
+
+- CRC32C is used only for session comparison, never password storage.
+- The database continues storing the full password hash.
+- No schema changes or account changes were required.
+- Actual session persistence and password-change invalidation
+  remain to be tested during login implementation.
