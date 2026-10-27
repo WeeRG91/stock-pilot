@@ -2,3 +2,7 @@ services:
     test.user_password_hasher:
         alias: Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface
         public: true
+
+    test.csrf_token_manager:
+        alias: Symfony\Component\Security\Csrf\CsrfTokenManagerInterface
+        public: true

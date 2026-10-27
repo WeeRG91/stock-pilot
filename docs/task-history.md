@@ -1419,3 +1419,39 @@ Executed by the learner; outputs reviewed:
 - No schema changes or account changes were required.
 - Actual session persistence and password-change invalidation
   remain to be tested during login implementation.
+
+## Task 47 — Session-Bound CSRF Token Foundation
+
+### Completed
+
+- Enabled stateful CSRF token management.
+- Configured the STOCKPILOTSESSID cookie with HttpOnly,
+  SameSite=Lax, and automatic Secure handling.
+- Added a token-bootstrap endpoint with three allowed intents:
+  authenticate, logout, and api.
+- Prevented caching of token responses.
+- Added endpoint and token-binding tests.
+
+### Verification
+
+Outputs reviewed:
+
+- Live bootstrap returned 200, a token, and the named session cookie.
+- Cache-Control included no-store and private.
+- Endpoint tests passed: two tests, seven assertions.
+- Token-manager test passed: one test, four assertions.
+- Test container validation passed.
+
+Learner reported remaining final checks passed.
+Expected backend total: 50 tests, 117 assertions.
+Final full-suite output was not shared.
+Assistant reviewed the configuration, controller, and tests.
+
+### Decisions and limitations
+
+- Test storage uses MOCKSESSID; live storage uses STOCKPILOTSESSID.
+- Tokens are bound to a session and an intent.
+- No database records are required by these tests.
+- Generating a token does not authenticate a user.
+- Existing mutations do not yet enforce CSRF validation.
+- Login, logout, and API enforcement remain pending.
