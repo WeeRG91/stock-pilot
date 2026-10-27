@@ -1354,3 +1354,39 @@ Assistant reviewed configuration, entity, repository, and tests.
 - No account has been provisioned by this task.
 - Login and access restrictions are not implemented.
 - Safe user serialization must be addressed before session login.
+
+## Task 45 — Provision a User Through Symfony Console
+
+### Completed
+
+- Added app:create-user with an email argument.
+- Required interactive, hidden password entry and confirmation.
+- Preserved password whitespace and disabled visible-input fallback.
+- Applied a 12–128 character provisioning policy.
+- Used Symfony's configured password hasher before persistence.
+- Rejected duplicate emails without overwriting accounts.
+- Added two command tests for early input guards.
+
+### Verification
+
+Outputs reviewed:
+
+- Command registration and container validation passed.
+- Database query confirmed one user with a nonempty hash field.
+- Duplicate email returned exit code 1.
+- Invalid email and noninteractive execution returned exit code 2.
+- User count remained one after rejected commands.
+- Command tests passed: two tests, four assertions.
+
+Learner reported remaining final checks passed.
+Expected backend total: 44 tests, 96 assertions.
+Final full-suite and schema-check outputs were not shared.
+Assistant reviewed the command and tests.
+
+### Decisions and limitations
+
+- Passwords are entered through prompts, never command arguments.
+- Account data remains in the local database, not Git.
+- Automated command tests exit before database access.
+- Successful provisioning and duplicate detection were manually verified.
+- Login, safe session serialization, and access restrictions remain pending.
