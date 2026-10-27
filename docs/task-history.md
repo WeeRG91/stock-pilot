@@ -1316,3 +1316,41 @@ Final suite, build, and schema-check outputs were not shared.
 - Initial authenticated users can manage inventory.
 - Initial accounts will be provisioned through a console command.
 - Authentication and authorization are designed but not implemented.
+
+## Task 44 — Symfony Security and the User Entity
+
+### Completed
+
+- Installed Symfony SecurityBundle 7.4.21 and its dependencies.
+- Added User with normalized email identifiers and ROLE_USER.
+- Added password-hash storage and domain validation.
+- Created and applied the users migration with a unique email index.
+- Configured a Doctrine-backed user provider.
+- Added a repository supporting password-hash upgrades.
+- Added six user-model tests and a configured-hasher integration test.
+- Exposed the hasher through a test-only public alias.
+
+### Verification
+
+Outputs reviewed:
+
+- User-model tests passed: six tests, 10 assertions.
+- Configured-hasher test passed: one test, three assertions.
+- Migration dry-run and successful execution were reviewed.
+- Schema validation passed.
+- Required user columns and unique email index were verified.
+
+Learner reported the remaining final checks passed.
+Expected backend total: 42 tests, 92 assertions.
+Final full-suite and Composer-check outputs were not shared.
+Assistant reviewed configuration, entity, repository, and tests.
+
+### Decisions and limitations
+
+- All initial users receive ROLE_USER.
+- New users must receive a password hash before persistence.
+- Email identifiers are trimmed and lowercased.
+- Test hashing costs are lower than production costs.
+- No account has been provisioned by this task.
+- Login and access restrictions are not implemented.
+- Safe user serialization must be addressed before session login.
