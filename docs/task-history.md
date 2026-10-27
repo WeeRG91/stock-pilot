@@ -1293,3 +1293,26 @@ Final suite, build, and schema-check outputs were not shared.
 - The success query parameter is a display hint.
 - The threshold Server Action is not yet covered by isolated tests.
 - Authentication and authorization remain deferred.
+
+## Task 43 — Authentication Design
+
+### Completed
+
+- Chose Symfony-managed sessions with Next.js handling browser requests.
+- Defined explicit forwarding of the current user's session.
+- Documented cookie handling, session rotation, expiry, and logout.
+- Defined protected endpoints and 401/403 behavior.
+- Required CSRF protection for login, logout, and mutations.
+- Deferred registration, password recovery, and additional roles.
+
+### Verification
+
+- Assistant reviewed the authentication design document.
+- Documentation only; no dependencies or application behavior changed.
+- No automated tests required for this documentation change.
+
+### Decisions and limitations
+
+- Initial authenticated users can manage inventory.
+- Initial accounts will be provisioned through a console command.
+- Authentication and authorization are designed but not implemented.
