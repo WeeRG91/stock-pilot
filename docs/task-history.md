@@ -1721,3 +1721,42 @@ Assistant corrected the control test's act import at the learner's request.
 - Account requests are uncached and reject redirects.
 - Broader authentication integration review remains pending.
 - Real-time inventory integration is planned afterward.
+
+## Task 55 — Authentication Integration Review
+
+### Completed
+
+- Added account-navigation fallback for backend lookup failures.
+- Preserved Next.js control-flow exceptions through error handling.
+- Added three navigation-state tests.
+- Manually checked rejected sessions, browser Back after logout,
+  and backend downtime and recovery.
+
+### Verification
+
+Output reviewed:
+
+- Navigation tests passed: three tests.
+
+Learner confirmed:
+
+- An unrecognized session identifier redirects protected reads to login.
+- Browser Back after logout does not restore authenticated access.
+- Reloading protected pages after logout still requires login.
+- Backend downtime shows account-unavailable and page-error feedback.
+- The login form remains accessible during backend downtime.
+- Failed login requests show feedback.
+- Access recovers after restarting Symfony.
+
+Learner reported final frontend tests, lint, TypeScript, and build
+passed by proceeding without errors.
+Assistant reviewed the fallback and tests.
+
+### Decisions and limitations
+
+- Backend failure is distinguished from anonymous authentication.
+- Internal connection details are not displayed in navigation.
+- Session rejection was simulated with an unrecognized identifier;
+  natural session expiry was not timed.
+- Browser integration checks were manual, not automated end-to-end tests.
+- Real-time inventory integration remains the next planned feature.

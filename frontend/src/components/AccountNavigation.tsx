@@ -2,9 +2,23 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/getCurrentUser.server";
 import { LogoutControl } from "./LogoutControl";
 import { logout } from "@/app/logout-action";
+import { AuthUser } from "@/types/auth";
+import { unstable_rethrow } from "next/navigation";
 
 export async function AccountNavigation() {
-  const user = await getCurrentUser();
+  let user: AuthUser | null;
+
+  try {
+    user = await getCurrentUser();
+  } catch (error) {
+    unstable_rethrow(error);
+
+    return (
+      <div className="ml-auto text-zinc-600" role="status">
+        Account temporarily unavailable.
+      </div>
+    );
+  }
 
   if (!user) {
     return (
