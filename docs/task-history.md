@@ -1599,3 +1599,47 @@ Assistant reviewed the subscriber and tests.
 - Login and logout retain their own token intents.
 - The live check used malformed JSON without creating a product.
 - Frontend session and CSRF forwarding remain pending.
+
+## Task 52 — Frontend Login and Dashboard Session Forwarding
+
+### Completed
+
+- Added the login page and form with pending and error states.
+- Added server-side login input validation.
+- Added runtime authentication response validation.
+- Added Symfony session-cookie extraction.
+- Implemented CSRF bootstrap and credential submission in a Server Action.
+- Required session rotation before storing the authenticated session.
+- Stored the session in an HttpOnly, SameSite=Lax browser cookie,
+  with Secure enabled in production.
+- Forwarded the current session for dashboard requests.
+- Redirected missing or expired dashboard sessions to login.
+- Added parser, input, cookie, session-header, and login-action tests.
+
+### Verification
+
+Outputs reviewed:
+
+- Authentication response parser: 18 tests passed.
+- Symfony cookie extraction: 12 tests passed.
+- Login input validation: 11 tests passed.
+- Session-header helper: seven tests passed.
+- Login action: nine tests passed before the final network case.
+- Lint and TypeScript checks passed during implementation.
+
+Learner confirmed browser login and authenticated overview work.
+Learner reported final tests, lint, TypeScript, and build passed
+by proceeding without errors.
+The final network-failure test was present during review.
+Assistant reviewed the login implementation and dashboard changes.
+
+### Decisions and limitations
+
+- Passwords are excluded from returned form state.
+- Each login attempt starts with a fresh Symfony bootstrap session.
+- Session credentials are forwarded only to the configured backend,
+  with redirects disabled.
+- Dashboard requests are uncached and have a timeout.
+- Product reads and mutations still need session forwarding.
+- Mutation CSRF forwarding and frontend logout remain pending.
+- Real-time inventory integration is planned after authentication.
