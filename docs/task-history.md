@@ -1643,3 +1643,44 @@ Assistant reviewed the login implementation and dashboard changes.
 - Product reads and mutations still need session forwarding.
 - Mutation CSRF forwarding and frontend logout remain pending.
 - Real-time inventory integration is planned after authentication.
+
+## Task 53 — Authenticated Product Reads and Mutations
+
+### Completed
+
+- Forwarded the current session for product listing, details, stock,
+  movement history, and threshold reads.
+- Added a shared helper to obtain session-bound api CSRF headers.
+- Connected product creation, editing, activation, stock movements,
+  and threshold updates to authenticated mutation headers.
+- Redirected expired sessions to login.
+- Added explicit CSRF rejection feedback.
+- Preserved Next.js redirects through action error handling.
+- Renamed product creation action files to singular action.
+- Updated existing mutation action tests.
+
+### Verification
+
+Outputs reviewed:
+
+- Mutation-header helper: eight tests passed.
+- Product creation action: 12 tests passed.
+- Product editing action: 18 tests passed.
+- Activation action: 18 tests passed.
+- Stock-in and stock-out actions: 44 tests passed together.
+
+Learner confirmed browser product creation worked.
+Learner reported the remaining browser checks and final frontend
+tests, lint, TypeScript, and build passed by proceeding without errors.
+Assistant reviewed forwarding changes and updated the five existing
+mutation action test files at the learner's request.
+
+### Decisions and limitations
+
+- CSRF bootstrap uses the same session as the subsequent mutation.
+- Session and CSRF credentials stay in server-side requests.
+- Authenticated requests are uncached, reject redirects, and use timeouts.
+- Mutations are not automatically retried.
+- Existing business validation and response checks remain in place.
+- Threshold mutation authentication was checked manually.
+- Frontend logout and navigation session handling remain pending.

@@ -1,10 +1,16 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
+import { getApiMutationHeaders } from "@/lib/getApiMutationHeaders.server";
 import type { ProductFormState } from "@/types/productForm";
-import { createProduct } from "./actions";
+import { createProduct } from "./action";
 
 vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
+  unstable_rethrow: vi.fn(),
+}));
+
+vi.mock("@/lib/getApiMutationHeaders.server", () => ({
+  getApiMutationHeaders: vi.fn(),
 }));
 
 const fetchMock = vi.fn<typeof fetch>();
@@ -17,6 +23,12 @@ const initialState: ProductFormState = {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.mocked(getApiMutationHeaders).mockResolvedValue({
+    Accept: "application/json",
+    Cookie: "STOCKPILOTSESSID=test-session",
+    "Content-Type": "application/json",
+    "X-CSRF-Token": "test-api-token",
+  });
   vi.stubGlobal("fetch", fetchMock);
   vi.stubEnv("STOCKPILOT_API_URL", "http://stockpilot.test:8000");
 });
@@ -42,6 +54,7 @@ test("returns field errors without requesting the API or redirecting", async () 
     message: "Please correct the highlighted fields.",
   });
   expect(fetchMock).not.toHaveBeenCalled();
+  expect(getApiMutationHeaders).not.toHaveBeenCalled();
   expect(redirect).not.toHaveBeenCalled();
 });
 
@@ -152,9 +165,13 @@ test("posts product details and redirects to the created product", async () => {
   expect(options).toEqual(
     expect.objectContaining({
       method: "POST",
+      cache: "no-store",
+      redirect: "error",
       headers: {
         Accept: "application/json",
+        Cookie: "STOCKPILOTSESSID=test-session",
         "Content-Type": "application/json",
+        "X-CSRF-Token": "test-api-token",
       },
       body: JSON.stringify({
         name: " Mechanical Keyboard ",
@@ -165,6 +182,62 @@ test("posts product details and redirects to the created product", async () => {
 
   expect(redirect).toHaveBeenCalledOnce();
   expect(redirect).toHaveBeenCalledWith("/products/42");
+});
+
+test("preserves the login redirect when the API session has expired", async () => {
+  const formData = new FormData();
+  formData.set("name", "Mechanical Keyboard");
+  formData.set("sku", "KEYBOARD-NEW");
+  fetchMock.mockResolvedValueOnce(new Response(null, { status: 401 }));
+
+  const redirectSignal = new Error("Test login redirect");
+  vi.mocked(redirect).mockImplementationOnce(() => {
+    throw redirectSignal;
+  });
+  vi.mocked(unstable_rethrow).mockImplementationOnce((error) => {
+    if (error === redirectSignal) throw error;
+  });
+
+  await expect(createProduct(initialState, formData)).rejects.toBe(redirectSignal);
+
+  expect(redirect).toHaveBeenCalledExactlyOnceWith("/login");
+  expect(unstable_rethrow).toHaveBeenCalledWith(redirectSignal);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+test("preserves submitted values when CSRF verification fails", async () => {
+  const formData = new FormData();
+  formData.set("name", "Mechanical Keyboard");
+  formData.set("sku", "KEYBOARD-NEW");
+  fetchMock.mockResolvedValueOnce(new Response(null, { status: 403 }));
+
+  const result = await createProduct(initialState, formData);
+
+  expect(result).toEqual({
+    values: { name: "Mechanical Keyboard", sku: "KEYBOARD-NEW" },
+    fieldErrors: {},
+    message: "Request verification failed. Please submit the form again.",
+  });
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(redirect).not.toHaveBeenCalled();
+});
+
+test("preserves a missing-session redirect without submitting the mutation", async () => {
+  const formData = new FormData();
+  formData.set("name", "Mechanical Keyboard");
+  formData.set("sku", "KEYBOARD-NEW");
+
+  const redirectSignal = new Error("Test missing-session redirect");
+  vi.mocked(getApiMutationHeaders).mockRejectedValueOnce(redirectSignal);
+  vi.mocked(unstable_rethrow).mockImplementationOnce((error) => {
+    if (error === redirectSignal) throw error;
+  });
+
+  await expect(createProduct(initialState, formData)).rejects.toBe(redirectSignal);
+
+  expect(unstable_rethrow).toHaveBeenCalledWith(redirectSignal);
+  expect(fetchMock).not.toHaveBeenCalled();
+  expect(redirect).not.toHaveBeenCalled();
 });
 
 test.each([

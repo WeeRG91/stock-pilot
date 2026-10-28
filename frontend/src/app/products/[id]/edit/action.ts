@@ -1,10 +1,11 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { mapProductValidationErrors } from "@/lib/mapProductValidationErrors";
 import { parseProductResponse } from "@/lib/parseProductResponse";
 import { readProductFormData } from "@/lib/readProductFormData";
 import type { ProductFormState } from "@/types/productForm";
+import { getApiMutationHeaders } from "@/lib/getApiMutationHeaders.server";
 
 export async function updateProduct(
   productId: number,
@@ -34,18 +35,30 @@ export async function updateProduct(
   }
 
   try {
+    const headers = await getApiMutationHeaders();
+
     const response = await fetch(
       new URL(`/api/products/${productId}`, apiUrl),
       {
         method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
+        cache: "no-store",
+        redirect: "error",
+        headers,
         body: JSON.stringify(state.values),
         signal: AbortSignal.timeout(10_000),
       },
     );
+
+    if (response.status === 401) {
+      redirect("/login");
+    }
+
+    if (response.status === 403) {
+      return {
+        ...state,
+        message: "Request verification failed. Please submit the form again.",
+      };
+    }
 
     if (response.status === 404) {
       return {
@@ -84,7 +97,9 @@ export async function updateProduct(
     if (result.data.id !== productId) {
       throw new Error("Updated product identifier does not match.");
     }
-  } catch {
+  } catch (error) {
+    unstable_rethrow(error);
+
     return {
       ...state,
       message:

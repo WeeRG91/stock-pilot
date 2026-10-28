@@ -1,8 +1,10 @@
 "use server";
 
+import { getApiMutationHeaders } from "@/lib/getApiMutationHeaders.server";
 import { parseProductResponse } from "@/lib/parseProductResponse";
 import type { ProductActivationState } from "@/types/productActivation";
 import { revalidatePath } from "next/cache";
+import { redirect, unstable_rethrow } from "next/navigation";
 
 export async function setProductActivation(
   productId: number,
@@ -25,16 +27,28 @@ export async function setProductActivation(
   const operation = active ? "activate" : "deactivate";
 
   try {
+    const headers = await getApiMutationHeaders();
+
     const response = await fetch(
       new URL(`/api/products/${productId}/${operation}`, apiUrl),
       {
         method: "POST",
-        headers: {
-          Accept: "application/json",
-        },
+        cache: "no-store",
+        redirect: "error",
+        headers,
         signal: AbortSignal.timeout(10_000),
       },
     );
+
+    if (response.status === 401) {
+      redirect("/login");
+    }
+
+    if (response.status === 403) {
+      return {
+        error: "Request verification failed. Please submit the form again.",
+      };
+    }
 
     if (response.status === 404) {
       return { error: "This product no longer exists." };
@@ -53,7 +67,9 @@ export async function setProductActivation(
     if (result.data.id !== productId || result.data.active !== active) {
       throw new Error("Unexpected product activation response.");
     }
-  } catch {
+  } catch (error) {
+    unstable_rethrow(error);
+
     return {
       error:
         "Status change could not be confirmed. Reload the product before retrying.",

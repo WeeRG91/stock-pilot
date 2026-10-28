@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { parseLowStockThresholdResponse } from "@/lib/parseLowStockThresholdResponse";
 import { readLowStockThresholdFormData } from "@/lib/readLowStockThresholdFormData";
 import type { LowStockThresholdFormState } from "@/types/lowStockThreshold";
+import { getApiMutationHeaders } from "@/lib/getApiMutationHeaders.server";
 
 export async function saveLowStockThreshold(
   productId: number,
@@ -36,18 +37,30 @@ export async function saveLowStockThreshold(
   const threshold = Number(state.values.threshold.trim());
 
   try {
+    const headers = await getApiMutationHeaders();
+
     const response = await fetch(
       new URL(`/api/products/${productId}/low-stock-threshold`, apiUrl),
       {
         method: "PUT",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
+        cache: "no-store",
+        redirect: "error",
+        headers,
         body: JSON.stringify({ threshold }),
         signal: AbortSignal.timeout(10_000),
       },
     );
+
+    if (response.status === 401) {
+      redirect("/login");
+    }
+
+    if (response.status === 403) {
+      return {
+        ...state,
+        message: "Request verification failed. Please submit the form again.",
+      };
+    }
 
     if (response.status === 404) {
       return {
@@ -79,7 +92,9 @@ export async function saveLowStockThreshold(
     ) {
       throw new Error("Unexpected threshold-update response.");
     }
-  } catch {
+  } catch (error) {
+    unstable_rethrow(error);
+
     return {
       ...state,
       message:

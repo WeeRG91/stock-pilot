@@ -1,10 +1,11 @@
 "use server";
 
+import { getApiMutationHeaders } from "@/lib/getApiMutationHeaders.server";
 import { mapProductValidationErrors } from "@/lib/mapProductValidationErrors";
 import { parseProductResponse } from "@/lib/parseProductResponse";
 import { readProductFormData } from "@/lib/readProductFormData";
 import type { ProductFormState } from "@/types/productForm";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 
 export async function createProduct(
   _previousState: ProductFormState,
@@ -28,15 +29,27 @@ export async function createProduct(
   let createdProductId: number;
 
   try {
+    const headers = await getApiMutationHeaders();
+
     const response = await fetch(new URL("/api/products", apiUrl), {
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+      cache: "no-store",
+      redirect: "error",
+      headers,
       body: JSON.stringify(state.values),
       signal: AbortSignal.timeout(10_000),
     });
+
+    if (response.status === 401) {
+      redirect("/login");
+    }
+
+    if (response.status === 403) {
+      return {
+        ...state,
+        message: "Request verification failed. Please submit the form again.",
+      };
+    }
 
     if (response.status === 409) {
       return {
@@ -66,7 +79,9 @@ export async function createProduct(
     const result = parseProductResponse(payload);
 
     createdProductId = result.data.id;
-  } catch {
+  } catch (error) {
+    unstable_rethrow(error)
+
     return {
       ...state,
       message:

@@ -1,10 +1,11 @@
-"use server"
+"use server";
 
 import { StockMovementFormState } from "@/types/stockMovementForm";
 import { readStockQuantityFormData } from "@/lib/readStockQuantityFormData";
 import { parseStockOutResponse } from "@/lib/parseStockOutResponse";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
+import { getApiMutationHeaders } from "@/lib/getApiMutationHeaders.server";
 
 export async function recordStockOut(
   productId: number,
@@ -36,18 +37,30 @@ export async function recordStockOut(
   const quantity = Number(state.values.quantity.trim());
 
   try {
+    const headers = await getApiMutationHeaders();
+
     const response = await fetch(
       new URL(`/api/products/${productId}/stock-out`, apiUrl),
       {
         method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
+        cache: "no-store",
+        redirect: "error",
+        headers,
         body: JSON.stringify({ quantity }),
         signal: AbortSignal.timeout(10_000),
       },
     );
+
+    if (response.status === 401) {
+      redirect("/login");
+    }
+
+    if (response.status === 403) {
+      return {
+        ...state,
+        message: "Request verification failed. Please submit the form again.",
+      };
+    }
 
     if (response.status === 404) {
       return {
@@ -118,7 +131,9 @@ export async function recordStockOut(
     ) {
       throw new Error("Unexpected stock-out response.");
     }
-  } catch {
+  } catch (error) {
+    unstable_rethrow(error);
+
     return {
       ...state,
       message:

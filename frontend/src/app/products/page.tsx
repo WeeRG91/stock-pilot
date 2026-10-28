@@ -1,7 +1,9 @@
 import { buildProductsHref } from "@/lib/buildProductsHref";
+import { getApiSessionHeaders } from "@/lib/getApiSessionHeaders.server";
 import { parseProductFilters } from "@/lib/parseProductFilters";
 import { parseProductListResponse } from "@/lib/parseProductListResponse";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function ProductsPage({
   searchParams,
@@ -42,12 +44,18 @@ export default async function ProductsPage({
   url.searchParams.set("page", String(page));
   url.searchParams.set("limit", String(limit));
 
+  const headers = await getApiSessionHeaders();
+
   const response = await fetch(url, {
     cache: "no-store",
-    headers: {
-      Accept: "application/json",
-    },
+    redirect: "error",
+    headers,
+    signal: AbortSignal.timeout(10_000),
   });
+
+  if (response.status === 401) {
+    redirect("/login");
+  }
 
   if (!response.ok) {
     throw new Error("Unable to fetch products.");

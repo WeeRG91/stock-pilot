@@ -1,15 +1,32 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { revalidatePath } from "next/cache";
+import { redirect, unstable_rethrow } from "next/navigation";
+import { getApiMutationHeaders } from "@/lib/getApiMutationHeaders.server";
 import { setProductActivation } from "./activation-actions";
 
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
+vi.mock("@/lib/getApiMutationHeaders.server", () => ({
+  getApiMutationHeaders: vi.fn(),
+}));
+
+vi.mock("next/navigation", () => ({
+  redirect: vi.fn(),
+  unstable_rethrow: vi.fn(),
+}));
+
 const fetchMock = vi.fn<typeof fetch>();
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.mocked(getApiMutationHeaders).mockResolvedValue({
+    Accept: "application/json",
+    Cookie: "STOCKPILOTSESSID=test-session",
+    "Content-Type": "application/json",
+    "X-CSRF-Token": "test-api-token",
+  });
   vi.stubGlobal("fetch", fetchMock);
   vi.stubEnv("STOCKPILOT_API_URL", "http://stockpilot.test:8000");
 });
@@ -56,13 +73,65 @@ test.each([
   expect(options).toEqual(
     expect.objectContaining({
       method: "POST",
-      headers: { Accept: "application/json" },
+      cache: "no-store",
+      redirect: "error",
+      headers: {
+        Accept: "application/json",
+        Cookie: "STOCKPILOTSESSID=test-session",
+        "Content-Type": "application/json",
+        "X-CSRF-Token": "test-api-token",
+      },
     }),
   );
 
   expect(revalidatePath).toHaveBeenCalledTimes(2);
   expect(revalidatePath).toHaveBeenCalledWith("/products/2");
   expect(revalidatePath).toHaveBeenCalledWith("/products");
+});
+
+test("preserves the login redirect when the API session has expired", async () => {
+  fetchMock.mockResolvedValueOnce(new Response(null, { status: 401 }));
+
+  const redirectSignal = new Error("Test login redirect");
+  vi.mocked(redirect).mockImplementationOnce(() => {
+    throw redirectSignal;
+  });
+  vi.mocked(unstable_rethrow).mockImplementationOnce((error) => {
+    if (error === redirectSignal) throw error;
+  });
+
+  await expect(setProductActivation(2, false)).rejects.toBe(redirectSignal);
+
+  expect(redirect).toHaveBeenCalledExactlyOnceWith("/login");
+  expect(unstable_rethrow).toHaveBeenCalledWith(redirectSignal);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(revalidatePath).not.toHaveBeenCalled();
+});
+
+test("reports CSRF rejection without refreshing pages or retrying", async () => {
+  fetchMock.mockResolvedValueOnce(new Response(null, { status: 403 }));
+
+  await expect(setProductActivation(2, false)).resolves.toEqual({
+    error: "Request verification failed. Please submit the form again.",
+  });
+
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(redirect).not.toHaveBeenCalled();
+  expect(revalidatePath).not.toHaveBeenCalled();
+});
+
+test("preserves a missing-session redirect without submitting the mutation", async () => {
+  const redirectSignal = new Error("Test missing-session redirect");
+  vi.mocked(getApiMutationHeaders).mockRejectedValueOnce(redirectSignal);
+  vi.mocked(unstable_rethrow).mockImplementationOnce((error) => {
+    if (error === redirectSignal) throw error;
+  });
+
+  await expect(setProductActivation(2, false)).rejects.toBe(redirectSignal);
+
+  expect(unstable_rethrow).toHaveBeenCalledWith(redirectSignal);
+  expect(fetchMock).not.toHaveBeenCalled();
+  expect(revalidatePath).not.toHaveBeenCalled();
 });
 
 test("reports a missing product without refreshing pages", async () => {

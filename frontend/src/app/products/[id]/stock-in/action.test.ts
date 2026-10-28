@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
+import { getApiMutationHeaders } from "@/lib/getApiMutationHeaders.server";
 import type { StockMovementFormState } from "@/types/stockMovementForm";
 import { recordStockIn } from "./action";
 
@@ -10,6 +11,11 @@ vi.mock("next/cache", () => ({
 
 vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
+  unstable_rethrow: vi.fn(),
+}));
+
+vi.mock("@/lib/getApiMutationHeaders.server", () => ({
+  getApiMutationHeaders: vi.fn(),
 }));
 
 const fetchMock = vi.fn<typeof fetch>();
@@ -22,6 +28,12 @@ const initialState: StockMovementFormState = {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.mocked(getApiMutationHeaders).mockResolvedValue({
+    Accept: "application/json",
+    Cookie: "STOCKPILOTSESSID=test-session",
+    "Content-Type": "application/json",
+    "X-CSRF-Token": "test-api-token",
+  });
   vi.stubGlobal("fetch", fetchMock);
   vi.stubEnv("STOCKPILOT_API_URL", "http://stockpilot.test:8000");
 });
@@ -29,6 +41,56 @@ beforeEach(() => {
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
+});
+
+test("preserves the login redirect when the API session has expired", async () => {
+  const formData = new FormData();
+  formData.set("quantity", "2");
+  fetchMock.mockResolvedValueOnce(new Response(null, { status: 401 }));
+  const redirectSignal = new Error("Test login redirect");
+  vi.mocked(redirect).mockImplementationOnce(() => { throw redirectSignal; });
+  vi.mocked(unstable_rethrow).mockImplementationOnce((error) => {
+    if (error === redirectSignal) throw error;
+  });
+
+  await expect(recordStockIn(2, initialState, formData)).rejects.toBe(redirectSignal);
+
+  expect(redirect).toHaveBeenCalledExactlyOnceWith("/login");
+  expect(unstable_rethrow).toHaveBeenCalledWith(redirectSignal);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(revalidatePath).not.toHaveBeenCalled();
+});
+
+test("preserves quantity after CSRF rejection without retrying", async () => {
+  const formData = new FormData();
+  formData.set("quantity", " 2 ");
+  fetchMock.mockResolvedValueOnce(new Response(null, { status: 403 }));
+
+  await expect(recordStockIn(2, initialState, formData)).resolves.toEqual({
+    values: { quantity: " 2 " },
+    fieldErrors: {},
+    message: "Request verification failed. Please submit the form again.",
+  });
+
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(redirect).not.toHaveBeenCalled();
+  expect(revalidatePath).not.toHaveBeenCalled();
+});
+
+test("preserves a missing-session redirect without submitting the movement", async () => {
+  const formData = new FormData();
+  formData.set("quantity", "2");
+  const redirectSignal = new Error("Test missing-session redirect");
+  vi.mocked(getApiMutationHeaders).mockRejectedValueOnce(redirectSignal);
+  vi.mocked(unstable_rethrow).mockImplementationOnce((error) => {
+    if (error === redirectSignal) throw error;
+  });
+
+  await expect(recordStockIn(2, initialState, formData)).rejects.toBe(redirectSignal);
+
+  expect(unstable_rethrow).toHaveBeenCalledWith(redirectSignal);
+  expect(fetchMock).not.toHaveBeenCalled();
+  expect(revalidatePath).not.toHaveBeenCalled();
 });
 
 test("posts a numeric quantity, refreshes pages, and redirects", async () => {
@@ -73,9 +135,13 @@ test("posts a numeric quantity, refreshes pages, and redirects", async () => {
   expect(options).toEqual(
     expect.objectContaining({
       method: "POST",
+      cache: "no-store",
+      redirect: "error",
       headers: {
         Accept: "application/json",
+        Cookie: "STOCKPILOTSESSID=test-session",
         "Content-Type": "application/json",
+        "X-CSRF-Token": "test-api-token",
       },
       body: JSON.stringify({ quantity: 2 }),
     }),

@@ -1,10 +1,16 @@
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
+import { getApiMutationHeaders } from "@/lib/getApiMutationHeaders.server";
 import type { ProductFormState } from "@/types/productForm";
 import { updateProduct } from "./action";
 
 vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
+  unstable_rethrow: vi.fn(),
+}));
+
+vi.mock("@/lib/getApiMutationHeaders.server", () => ({
+  getApiMutationHeaders: vi.fn(),
 }));
 
 const fetchMock = vi.fn<typeof fetch>();
@@ -20,6 +26,12 @@ const initialState: ProductFormState = {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.mocked(getApiMutationHeaders).mockResolvedValue({
+    Accept: "application/json",
+    Cookie: "STOCKPILOTSESSID=test-session",
+    "Content-Type": "application/json",
+    "X-CSRF-Token": "test-api-token",
+  });
   vi.stubGlobal("fetch", fetchMock);
   vi.stubEnv("STOCKPILOT_API_URL", "http://stockpilot.test:8000");
 });
@@ -71,9 +83,13 @@ test("puts edited values and redirects to the updated product", async () => {
   expect(options).toEqual(
     expect.objectContaining({
       method: "PUT",
+      cache: "no-store",
+      redirect: "error",
       headers: {
         Accept: "application/json",
+        Cookie: "STOCKPILOTSESSID=test-session",
         "Content-Type": "application/json",
+        "X-CSRF-Token": "test-api-token",
       },
       body: JSON.stringify({
         name: " Ergonomic Keyboard ",
@@ -84,6 +100,62 @@ test("puts edited values and redirects to the updated product", async () => {
 
   expect(redirect).toHaveBeenCalledOnce();
   expect(redirect).toHaveBeenCalledWith("/products/2");
+});
+
+test("preserves the login redirect when the API session has expired", async () => {
+  const formData = new FormData();
+  formData.set("name", "Ergonomic Keyboard");
+  formData.set("sku", "KEYBOARD-002");
+  fetchMock.mockResolvedValueOnce(new Response(null, { status: 401 }));
+
+  const redirectSignal = new Error("Test login redirect");
+  vi.mocked(redirect).mockImplementationOnce(() => {
+    throw redirectSignal;
+  });
+  vi.mocked(unstable_rethrow).mockImplementationOnce((error) => {
+    if (error === redirectSignal) throw error;
+  });
+
+  await expect(updateProduct(2, initialState, formData)).rejects.toBe(redirectSignal);
+
+  expect(redirect).toHaveBeenCalledExactlyOnceWith("/login");
+  expect(unstable_rethrow).toHaveBeenCalledWith(redirectSignal);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+test("preserves edits when CSRF verification fails", async () => {
+  const formData = new FormData();
+  formData.set("name", "Ergonomic Keyboard");
+  formData.set("sku", "KEYBOARD-002");
+  fetchMock.mockResolvedValueOnce(new Response(null, { status: 403 }));
+
+  const result = await updateProduct(2, initialState, formData);
+
+  expect(result).toEqual({
+    values: { name: "Ergonomic Keyboard", sku: "KEYBOARD-002" },
+    fieldErrors: {},
+    message: "Request verification failed. Please submit the form again.",
+  });
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  expect(redirect).not.toHaveBeenCalled();
+});
+
+test("preserves a missing-session redirect without submitting the mutation", async () => {
+  const formData = new FormData();
+  formData.set("name", "Ergonomic Keyboard");
+  formData.set("sku", "KEYBOARD-002");
+
+  const redirectSignal = new Error("Test missing-session redirect");
+  vi.mocked(getApiMutationHeaders).mockRejectedValueOnce(redirectSignal);
+  vi.mocked(unstable_rethrow).mockImplementationOnce((error) => {
+    if (error === redirectSignal) throw error;
+  });
+
+  await expect(updateProduct(2, initialState, formData)).rejects.toBe(redirectSignal);
+
+  expect(unstable_rethrow).toHaveBeenCalledWith(redirectSignal);
+  expect(fetchMock).not.toHaveBeenCalled();
+  expect(redirect).not.toHaveBeenCalled();
 });
 
 test("preserves edits when the product no longer exists", async () => {

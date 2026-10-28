@@ -1,6 +1,6 @@
 import { ProductForm } from "@/components/ProductForm";
 import Link from "next/link";
-import { createProduct } from "./actions";
+import { createProduct } from "./action";
 
 export default function NewProductPage() {
   return (
