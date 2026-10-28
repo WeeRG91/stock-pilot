@@ -1805,3 +1805,45 @@ page components, and command notes.
 - Visual checks were performed by the learner; no automated visual
   regression testing was added.
 - Real-time inventory integration remains planned next.
+
+## Task 57 — Native Mercure Setup and Real-Time Design
+
+### Completed
+
+- Documented the initial real-time inventory design.
+- Installed Mercure hub 1.1.4 as a native Windows executable.
+- Installed MercureBundle 0.6.1 and Mercure component 0.9.0.
+- Skipped Docker configuration.
+- Configured protocol 1.0 and a local HTTP hub on port 8081.
+- Restricted publishing to urn:stockpilot:inventory.
+- Added a loopback-only Caddyfile with environment-based signing keys.
+- Added a private publication diagnostic command and two unit tests.
+- Recorded native hub startup instructions in the command notes.
+
+### Verification
+
+Outputs reviewed before the bundle patch update:
+
+- Hub configuration validated successfully.
+- Hub health endpoint returned 200 with body ok.
+- Symfony published a private diagnostic event successfully.
+- Anonymous subscription returned 401.
+- Diagnostic command tests passed: two tests, eight assertions.
+- Symfony YAML and container validation passed.
+
+Learner reported the earlier remaining checks passed by proceeding
+without errors.
+Final verification was requested again after updating the bundle.
+Expected full backend suite: 91 tests, 278 assertions.
+Assistant reviewed the configuration, command, tests, and startup notes.
+
+### Decisions and limitations
+
+- The hub uses SSE, not WebSockets.
+- The executable and runtime files remain outside the repository.
+- The signing secret stays in ignored backend/.env.local.
+- Local HTTP warnings are expected; production HTTPS is not configured.
+- Private subscription authorization is not yet implemented.
+- Inventory mutations do not yet publish events.
+- Post-commit delivery is initially planned as best effort.
+- Reliable delivery through a transactional outbox is deferred.

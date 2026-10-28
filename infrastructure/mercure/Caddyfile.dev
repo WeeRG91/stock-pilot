@@ -1,0 +1,29 @@
+{
+    admin off
+    persist_config off
+}
+
+http://127.0.0.1:8081 {
+    bind 127.0.0.1
+
+    mercure {
+        issuer http://127.0.0.1:8000 {
+            publisher {
+                jwt {env.MERCURE_JWT_SECRET} HS256
+            }
+
+            subscriber {
+                jwt {env.MERCURE_JWT_SECRET} HS256
+            }
+        }
+
+        resource_identifier http://127.0.0.1:8081/.well-known/mercure
+
+        cors_origins http://127.0.0.1:3000
+
+        cookie_name mercure_access_token
+    }
+
+    respond /healthz "ok" 200
+    respond "Not Found" 404
+}

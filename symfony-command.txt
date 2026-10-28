@@ -149,3 +149,64 @@ composer require "symfony/rate-limiter:7.4.*"
 Set-Location C:\Sites\stock-pilot-symfony\frontend
 
 npm.cmd run dev -- --hostname 127.0.0.1 --port 3000
+
+Real-time updates with Mercure (Server-Sent Events)
+composer require "symfony/mercure-bundle:^0.6"
+
+run this block once. It appends local Mercure settings and generates a signing secret without printing it:
+$mercureBytes = New-Object byte[] 32
+$mercureRandom = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+
+try {
+    $mercureRandom.GetBytes($mercureBytes)
+    $mercureSecret = [Convert]::ToBase64String($mercureBytes)
+
+    @(
+        ''
+        '# Local Mercure configuration'
+        'MERCURE_URL=http://127.0.0.1:8081/.well-known/mercure'
+        'MERCURE_PUBLIC_URL=http://127.0.0.1:8081/.well-known/mercure'
+        'MERCURE_JWT_ISSUER=http://127.0.0.1:8000'
+        "MERCURE_JWT_SECRET='$mercureSecret'"
+    ) | Add-Content -LiteralPath .env.local -Encoding UTF8
+}
+finally {
+    $mercureRandom.Dispose()
+    Remove-Variable mercureBytes, mercureRandom, mercureSecret `
+        -ErrorAction SilentlyContinue
+}
+
+Running from the Tools directory also keeps the hub’s runtime files outside your repository.
+& {
+    $mercureSecretEntry = Get-Content -LiteralPath `
+        'C:\Sites\stock-pilot-symfony\backend\.env.local' |
+        Where-Object { $_.StartsWith('MERCURE_JWT_SECRET=') } |
+        Select-Object -Last 1
+
+    if ([string]::IsNullOrWhiteSpace($mercureSecretEntry)) {
+        throw 'MERCURE_JWT_SECRET was not found in backend/.env.local.'
+    }
+
+    $env:MERCURE_JWT_SECRET = $mercureSecretEntry.Substring(
+        'MERCURE_JWT_SECRET='.Length
+    ).Trim().Trim("'").Trim('"')
+
+    Remove-Variable mercureSecretEntry
+
+    try {
+        Set-Location "$env:USERPROFILE\Tools\Mercure"
+
+        $configPath = 'C:\Sites\stock-pilot-symfony\infrastructure\mercure\Caddyfile.dev'
+
+        & .\mercure.exe validate --config $configPath --adapter caddyfile
+
+        if ($LASTEXITCODE -ne 0) {
+            throw 'Mercure configuration validation failed.'
+        }
+
+        & .\mercure.exe run --config $configPath --adapter caddyfile
+    }
+    finally {
+        Remove-Item Env:\MERCURE_JWT_SECRET -ErrorAction SilentlyContinue
+    }
+}
