@@ -22,7 +22,7 @@ export function ProductTable({ products }: ProductTableProps) {
   return (
     <div className="mt-6 overflow-hidden rounded-3xl border border-line bg-surface">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[580px] text-left text-sm">
+        <table className="w-full min-w-145 text-left text-sm">
           <caption className="sr-only">Product catalog</caption>
 
           <thead className="border-b border-line bg-surface-muted/50 text-xs text-muted">

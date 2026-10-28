@@ -47,7 +47,7 @@ export function DashboardMovements({
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[600px] text-left text-sm">
+          <table className="w-full min-w-150 text-left text-sm">
             <caption className="sr-only">
               Latest movements across all products
             </caption>

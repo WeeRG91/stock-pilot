@@ -33,7 +33,7 @@ export function FormPage({
           {eyebrow}
         </p>
 
-        <h1 className="mt-3 break-words font-serif text-4xl tracking-tight text-foreground sm:text-5xl">
+        <h1 className="mt-3 wrap-break-word font-serif text-4xl tracking-tight text-foreground sm:text-5xl">
           {title}
         </h1>
 
