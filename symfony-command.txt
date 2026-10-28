@@ -139,3 +139,13 @@ composer require symfony/validator:"7.4.*"
     curl.exe -i -H "Content-Type: application/json" --data-binary '@-' http://127.0.0.1:8000/api/products
 '{"name":"   ","sku":""}' |
     curl.exe -i -H "Content-Type: application/json" --data-binary '@-' http://127.0.0.1:8000/api/products
+
+Install the SecurityBundle
+composer require "symfony/security-bundle:7.4.*"
+
+Install login-throttling support
+composer require "symfony/rate-limiter:7.4.*"
+
+Set-Location C:\Sites\stock-pilot-symfony\frontend
+
+npm.cmd run dev -- --hostname 127.0.0.1 --port 3000

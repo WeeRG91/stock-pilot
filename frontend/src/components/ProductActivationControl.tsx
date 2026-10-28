@@ -21,7 +21,7 @@ export function ProductActivationControl({
   return (
     <form action={formAction} className="mt-6">
       {state.error && (
-        <p role="alert" className="mb-3 text-red-700">
+        <p role="alert" className="mb-3 text-sm text-danger">
           {state.error}
         </p>
       )}
@@ -29,7 +29,11 @@ export function ProductActivationControl({
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-white disabled:opacity-50"
+        className={`min-h-11 rounded-full px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
+          active
+            ? "text-danger hover:bg-accent-soft"
+            : "bg-success-soft text-success hover:bg-surface-muted"
+        }`}
       >
         {pending
           ? "Updating status…"

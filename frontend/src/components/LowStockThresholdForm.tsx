@@ -29,9 +29,9 @@ export function LowStockThresholdForm({
   const [threshold, setThreshold] = useState(String(initialThreshold));
 
   return (
-    <form action={formAction} className="mt-6 space-y-5">
+    <form action={formAction} className="form-panel">
       {state.message && (
-        <p role="alert" className="text-red-700">
+        <p role="alert" className="form-feedback">
           {state.message}
         </p>
       )}
@@ -42,7 +42,7 @@ export function LowStockThresholdForm({
         <div>
           <label
             htmlFor="low-stock-threshold"
-            className="block text-sm font-medium text-zinc-700"
+            className="form-label"
           >
             Low-stock threshold
           </label>
@@ -63,16 +63,16 @@ export function LowStockThresholdForm({
                 ? "threshold-help threshold-error"
                 : "threshold-help"
             }
-            className="mt-2 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900"
+            className="form-input"
           />
 
-          <p id="threshold-help" className="mt-2 text-sm text-zinc-600">
+          <p id="threshold-help" className="mt-2 text-sm leading-6 text-muted">
             Active products are low stock at or below this value.
             Zero warns only when stock is empty.
           </p>
 
           {state.fieldErrors.threshold && (
-            <p id="threshold-error" className="mt-2 text-sm text-red-700">
+            <p id="threshold-error" className="mt-2 text-sm text-danger">
               {state.fieldErrors.threshold}
             </p>
           )}
@@ -80,7 +80,7 @@ export function LowStockThresholdForm({
 
         <button
           type="submit"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-white disabled:opacity-50"
+          className="button-primary"
         >
           {pending ? "Saving threshold…" : "Save threshold"}
         </button>

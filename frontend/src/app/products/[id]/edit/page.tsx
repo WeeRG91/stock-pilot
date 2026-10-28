@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProduct } from "@/lib/getProduct.server";
 import { updateProduct } from "./action";
 import { ProductForm } from "@/components/ProductForm";
+import { FormPage } from "@/components/FormPage";
 
 export default async function EditProductPage({
   params,
@@ -22,30 +22,23 @@ export default async function EditProductPage({
   const updateProductWithId = updateProduct.bind(null, product.id);
 
   return (
-    <main className="min-h-screen bg-zinc-50 px-6 py-12">
-      <div className="mx-auto max-w-2xl">
-        <Link
-          href={`/products/${product.id}`}
-          className="text-zinc-700 underline"
-        >
-          Back to product
-        </Link>
-
-        <h1 className="mt-6 text-3xl font-bold text-zinc-900">
-          Edit {product.name}
-        </h1>
-
-        <ProductForm
-            key={product.id}
-            action={updateProductWithId}
-            initialValues={{
-                name: product.name,
-                sku: product.sku,
-            }}
-            submitLabel="Save changes"
-            pendingLabel="Saving..."
-        />
-      </div>
-    </main>
+    <FormPage
+      title={`Edit ${product.name}`}
+      eyebrow="Product settings"
+      backHref={`/products/${product.id}`}
+      backLabel="Back to product"
+      description="Keep your product name and SKU clear and up to date."
+    >
+      <ProductForm
+        key={product.id}
+        action={updateProductWithId}
+        initialValues={{
+          name: product.name,
+          sku: product.sku,
+        }}
+        submitLabel="Save changes"
+        pendingLabel="Saving..."
+      />
+    </FormPage>
   );
 }

@@ -26,9 +26,9 @@ export function StockMovementForm({
   const isStockIn = direction === "in";
 
   return (
-    <form action={formAction} className="mt-6 space-y-5">
+    <form action={formAction} className="form-panel">
       {state.message && (
-        <p role="alert" className="text-red-700">
+        <p role="alert" className="form-feedback">
           {state.message}
         </p>
       )}
@@ -41,7 +41,7 @@ export function StockMovementForm({
         <div>
           <label
             htmlFor="stock-in-quantity"
-            className="block text-sm font-medium text-zinc-700"
+            className="form-label"
           >
             {isStockIn ? "Quantity received" : "Quantity to issue"}
           </label>
@@ -62,10 +62,10 @@ export function StockMovementForm({
                 ? "stock-in-quantity-help stock-in-quantity-error"
                 : "stock-in-quantity-help"
             }
-            className="mt-2 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900"
+            className="form-input"
           />
 
-          <p id="stock-in-quantity-help" className="mt-2 text-sm text-zinc-600">
+          <p id="stock-in-quantity-help" className="mt-2 text-sm leading-6 text-muted">
             {isStockIn
               ? "Enter the number of units received."
               : "Enter the number of units to issue."}{" "}
@@ -75,7 +75,7 @@ export function StockMovementForm({
           {state.fieldErrors.quantity && (
             <p
               id="stock-in-quantity-error"
-              className="mt-2 text-sm text-red-700"
+              className="mt-2 text-sm text-danger"
             >
               {state.fieldErrors.quantity}
             </p>
@@ -84,7 +84,7 @@ export function StockMovementForm({
 
         <button
           type="submit"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-white disabled:opacity-50"
+          className="button-primary"
         >
           {pending
             ? "Recording stock…"

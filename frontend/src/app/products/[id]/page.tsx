@@ -36,20 +36,43 @@ export default async function ProductDetailsPage({
   );
 
   return (
-    <main className="min-h-screen bg-zinc-50 px-6 py-12">
-      <div className="mx-auto max-w-5xl">
-        <Link href="/products" className="text-zinc-700 underline">
-          Back to products
+    <main className="flex-1 bg-background px-5 py-10 sm:px-8 sm:py-14">
+      <div className="mx-auto max-w-6xl">
+        <Link
+          href="/products"
+          className="inline-flex items-center gap-2 rounded-full py-2 text-sm text-muted hover:text-accent"
+        >
+          <span aria-hidden="true">←</span> Back to products
         </Link>
 
-        <h1 className="mt-6 text-3xl font-bold text-zinc-900">
-          {product.name}
-        </h1>
+        <div className="mt-6 flex flex-wrap items-start justify-between gap-5">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              Product details
+            </p>
+
+            <h1 className="mt-3 break-words font-serif text-4xl tracking-tight text-foreground sm:text-5xl">
+              {product.name}
+            </h1>
+
+            <p className="mt-3 font-mono text-sm text-muted">{product.sku}</p>
+          </div>
+
+          <span
+            className={`rounded-full px-4 py-2 text-xs font-medium ${
+              product.active
+                ? "bg-success-soft text-success"
+                : "bg-surface-muted text-muted"
+            }`}
+          >
+            {product.active ? "Active" : "Inactive"}
+          </span>
+        </div>
 
         {query.stockIn === "recorded" && (
           <p
             role="status"
-            className="mt-4 rounded-lg bg-green-50 p-4 text-green-800"
+            className="mt-6 rounded-2xl bg-success-soft px-5 py-4 text-sm text-success"
           >
             Stock received successfully.
           </p>
@@ -58,7 +81,7 @@ export default async function ProductDetailsPage({
         {query.stockOut === "recorded" && (
           <p
             role="status"
-            className="mt-4 rounded-lg bg-green-50 p-4 text-green-800"
+            className="mt-6 rounded-2xl bg-success-soft px-5 py-4 text-sm text-success"
           >
             Stock issued successfully.
           </p>
@@ -67,68 +90,107 @@ export default async function ProductDetailsPage({
         {query.threshold === "updated" && (
           <p
             role="status"
-            className="mt-4 rounded-lg bg-green-50 p-4 text-green-800"
+            className="mt-6 rounded-2xl bg-success-soft px-5 py-4 text-sm text-success"
           >
             Low-stock threshold updated.
           </p>
         )}
 
-        <Link
-          href={`/products/${product.id}/edit`}
-          className="mt-4 inline-block text-zinc-700 underline"
-        >
-          Edit product
-        </Link>
-
-        <Link
-          href={`/products/${product.id}/low-stock-threshold`}
-          className="ml-4 mt-4 inline-block text-zinc-700 underline"
-        >
-          Edit low-stock threshold
-        </Link>
-
-        {product.active && (
-          <Link
-            href={`/products/${product.id}/stock-in`}
-            className="ml-4 mt-4 inline-block text-zinc-700 underline"
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_1.4fr]">
+          <section
+            aria-labelledby="stock-balance-heading"
+            className="rounded-3xl border border-line bg-surface p-6 sm:p-8"
           >
-            Record stock in
-          </Link>
-        )}
+            <h2
+              id="stock-balance-heading"
+              className="text-sm font-medium text-muted"
+            >
+              Current stock
+            </h2>
 
-        {product.active && currentStock > 0 && (
-          <Link
-            href={`/products/${product.id}/stock-out`}
-            className="ml-4 mt-4 inline-block text-zinc-700 underline"
+            <p className="mt-5 text-6xl font-semibold tracking-tight text-foreground tabular-nums">
+              {currentStock.toLocaleString("en-GB")}
+              <span className="ml-3 text-base font-normal tracking-normal text-muted">
+                units
+              </span>
+            </p>
+
+            <div className="mt-7 flex flex-wrap gap-3">
+              {product.active && (
+                <Link
+                  href={`/products/${product.id}/stock-in`}
+                  className="inline-flex min-h-11 items-center rounded-full bg-accent px-5 py-3 text-sm font-medium text-white hover:bg-accent-hover"
+                >
+                  Record stock in
+                </Link>
+              )}
+
+              {product.active && currentStock > 0 && (
+                <Link
+                  href={`/products/${product.id}/stock-out`}
+                  className="inline-flex min-h-11 items-center rounded-full border border-line px-5 py-3 text-sm font-medium text-foreground hover:bg-surface-muted"
+                >
+                  Record stock out
+                </Link>
+              )}
+            </div>
+
+            {!product.active && (
+              <p className="mt-5 text-sm leading-6 text-muted">
+                Activate this product to record stock movements.
+              </p>
+            )}
+          </section>
+
+          <section
+            aria-labelledby="product-record-heading"
+            className="rounded-3xl border border-line bg-surface p-6 sm:p-8"
           >
-            Record stock out
-          </Link>
-        )}
+            <h2
+              id="product-record-heading"
+              className="text-lg font-semibold tracking-tight text-foreground"
+            >
+              Product record
+            </h2>
 
-        <dl className="mt-6 space-y-4 text-zinc-900">
-          <div>
-            <dt className="font-medium">Product ID</dt>
-            <dd>{product.id}</dd>
-          </div>
-          <div>
-            <dt className="font-medium">SKU</dt>
-            <dd>{product.sku}</dd>
-          </div>
-          <div>
-            <dt className="font-medium">Status</dt>
-            <dd>{product.active ? "Active" : "Inactive"}</dd>
-          </div>
-          <div>
-            <dt className="font-medium">Current stock</dt>
-            <dd>{currentStock.toLocaleString("en-GB")} units</dd>
-          </div>
-        </dl>
+            <dl className="mt-6 grid gap-5 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="text-xs text-muted">Product ID</dt>
+                <dd className="mt-2 font-medium text-foreground">
+                  #{product.id}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted">SKU</dt>
+                <dd className="mt-2 break-all font-mono text-foreground">
+                  {product.sku}
+                </dd>
+              </div>
+            </dl>
 
-        <ProductActivationControl
-          key={product.id}
-          active={product.active}
-          action={changeActivation}
-        />
+            <div className="mt-7 flex flex-wrap gap-3 border-t border-line pt-6">
+              <Link
+                href={`/products/${product.id}/edit`}
+                className="rounded-full border border-line px-4 py-3 text-sm font-medium text-foreground hover:bg-surface-muted"
+              >
+                Edit product
+              </Link>
+
+              <Link
+                href={`/products/${product.id}/low-stock-threshold`}
+                className="rounded-full border border-line px-4 py-3 text-sm font-medium text-foreground hover:bg-surface-muted"
+              >
+                Edit low-stock threshold
+              </Link>
+            </div>
+
+            <ProductActivationControl
+              key={product.id}
+              active={product.active}
+              action={changeActivation}
+            />
+          </section>
+        </div>
 
         <MovementHistory movements={movements} />
       </div>

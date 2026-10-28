@@ -1,3 +1,4 @@
+import { ProductTable } from "@/components/ProductTable";
 import { buildProductsHref } from "@/lib/buildProductsHref";
 import { getApiSessionHeaders } from "@/lib/getApiSessionHeaders.server";
 import { parseProductFilters } from "@/lib/parseProductFilters";
@@ -12,12 +13,24 @@ export default async function ProductsPage({
 
   if (!filters.success) {
     return (
-      <main className="min-h-screen bg-zinc-50 px-6 py-12">
-        <div className="mx-auto max-w-5xl">
-          <h1 className="text-3xl font-bold text-zinc-900">Products</h1>
-          <p className="mt-4 text-zinc-600" role="alert">
-            {filters.message}
-          </p>
+      <main className="flex-1 bg-background px-5 py-10 sm:px-8 sm:py-14">
+        <div className="mx-auto max-w-6xl">
+          <h1 className="font-serif text-4xl tracking-tight text-foreground">
+            Products
+          </h1>
+
+          <div className="mt-6 rounded-3xl border border-line bg-surface p-6">
+            <p className="text-sm text-danger" role="alert">
+              {filters.message}
+            </p>
+
+            <Link
+              href="/products"
+              className="mt-4 inline-flex rounded-full bg-accent px-5 py-3 text-sm font-medium text-white hover:bg-accent-hover"
+            >
+              Reset filters
+            </Link>
+          </div>
         </div>
       </main>
     );
@@ -65,29 +78,44 @@ export default async function ProductsPage({
   const result = parseProductListResponse(payload);
 
   return (
-    <main className="min-h-screen bg-zinc-50 px-6 py-12">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="text-3xl font-bold text-zinc-900">Products</h1>
+    <main className="flex-1 bg-background px-5 py-10 sm:px-8 sm:py-14">
+      <div className="mx-auto max-w-6xl">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+              Your catalog
+            </p>
 
-        <Link
-          href="/products/new"
-          className="mt-4 inline-block rounded-lg bg-zinc-900 px-4 py-2 text-white"
-        >
-          Create product
-        </Link>
+            <h1 className="mt-3 font-serif text-4xl tracking-tight text-foreground sm:text-5xl">
+              Products
+            </h1>
+
+            <p className="mt-4 text-sm leading-7 text-muted sm:text-base">
+              Keep your products organized and your inventory moving.
+            </p>
+          </div>
+
+          <Link
+            href="/products/new"
+            className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-hover sm:self-auto"
+          >
+            <span aria-hidden="true">+</span>
+            Create product
+          </Link>
+        </div>
 
         <form
           key={JSON.stringify([search, active])}
           action="/products"
           method="get"
-          className="mt-6 flex flex-wrap items-end gap-4"
+          className="mt-8 flex flex-wrap items-end gap-4 rounded-3xl border border-line bg-surface p-5 sm:p-6"
         >
           <input type="hidden" name="limit" value={limit} />
 
-          <div>
+          <div className="min-w-0 flex-1 basis-56">
             <label
               htmlFor="product-filter-search"
-              className="block text-sm font-medium text-zinc-700"
+              className="block text-xs font-medium text-muted"
             >
               Search products
             </label>
@@ -96,14 +124,14 @@ export default async function ProductsPage({
               name="search"
               type="search"
               defaultValue={search}
-              className="mt-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900"
+              className="mt-2 min-h-11 w-full rounded-xl border border-line bg-background px-4 py-2.5 text-sm text-foreground placeholder:text-muted"
             />
           </div>
 
-          <div>
+          <div className="w-full sm:w-44">
             <label
               htmlFor="product-filter-status"
-              className="block text-sm font-medium text-zinc-700"
+              className="block text-xs font-medium text-muted"
             >
               Status
             </label>
@@ -111,7 +139,7 @@ export default async function ProductsPage({
               id="product-filter-status"
               name="active"
               defaultValue={active}
-              className="mt-2 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900"
+              className="mt-2 min-h-11 w-full rounded-xl border border-line bg-background px-4 py-2.5 text-sm text-foreground"
             >
               <option value="">All statuses</option>
               <option value="true">Active</option>
@@ -121,56 +149,41 @@ export default async function ProductsPage({
 
           <button
             type="submit"
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-white"
+            className="min-h-11 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-surface transition-colors hover:bg-accent"
           >
             Apply filters
           </button>
 
-          <Link href="/products" className="py-2 text-zinc-700 underline">
+          <Link
+            href="/products"
+            className="rounded-full px-3 py-3 text-sm text-muted underline-offset-4 hover:text-accent hover:underline"
+          >
             Clear filters
           </Link>
         </form>
 
-        <p className="mt-2 text-zinc-600">
-          Showing {result.data.length} of {result.meta.total} products.
-        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
+          <p>
+            Showing{" "}
+            <span className="font-medium text-foreground">
+              {result.data.length}
+            </span>{" "}
+            of {result.meta.total} products
+          </p>
 
-        <p className="mt-1 text-sm text-zinc-600">
-          Requested page: {result.meta.page}. Total pages:{" "}
-          {result.meta.totalPages}.
-        </p>
+          <p>
+            Requested page {result.meta.page} · {result.meta.totalPages} total
+            pages
+          </p>
+        </div>
 
-        {result.data.length === 0 ? (
-          <p className="mt-6 text-zinc-600">No products found.</p>
-        ) : (
-          <ul className="mt-6 space-y-4">
-            {result.data.map((product) => (
-              <li
-                key={product.id}
-                className="rounded-xl border border-zinc-200 bg-white p-6"
-              >
-                <h2 className="text-lg font-semibold text-zinc-900">
-                  <Link
-                    href={`/products/${product.id}`}
-                    className="hover:underline"
-                  >
-                    {product.name}
-                  </Link>
-                </h2>
-                <p className="mt-1 text-sm text-zinc-600">SKU: {product.sku}</p>
-                <p className="mt-1 text-sm text-zinc-600">
-                  {product.active ? "Active" : "Inactive"}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
+        <ProductTable products={result.data} />
 
         <nav
           aria-label="Product pagination"
-          className="mt-6 flex gap-6 text-zinc-700"
+          className="mt-6 flex items-center justify-between gap-4"
         >
-          {result.meta.page > 1 && result.meta.totalPages > 0 && (
+          {result.meta.page > 1 && result.meta.totalPages > 0 ? (
             <Link
               href={buildProductsHref({
                 search,
@@ -178,13 +191,20 @@ export default async function ProductsPage({
                 page: Math.min(result.meta.page - 1, result.meta.totalPages),
                 limit,
               })}
-              className="underline"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-surface px-5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted"
             >
-              Previous
+              <span aria-hidden="true">←</span> Previous
             </Link>
+          ) : (
+            <span
+              aria-disabled="true"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-5 py-2 text-sm text-muted opacity-50"
+            >
+              <span aria-hidden="true">←</span> Previous
+            </span>
           )}
 
-          {result.meta.page < result.meta.totalPages && (
+          {result.meta.page < result.meta.totalPages ? (
             <Link
               href={buildProductsHref({
                 search,
@@ -192,10 +212,17 @@ export default async function ProductsPage({
                 page: result.meta.page + 1,
                 limit,
               })}
-              className="underline"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-surface px-5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted"
             >
-              Next
+              Next <span aria-hidden="true">→</span>
             </Link>
+          ) : (
+            <span
+              aria-disabled="true"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-5 py-2 text-sm text-muted opacity-50"
+            >
+              Next <span aria-hidden="true">→</span>
+            </span>
           )}
         </nav>
       </div>

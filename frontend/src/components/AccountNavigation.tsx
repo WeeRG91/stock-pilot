@@ -14,7 +14,7 @@ export async function AccountNavigation() {
     unstable_rethrow(error);
 
     return (
-      <div className="ml-auto text-zinc-600" role="status">
+      <div className="ml-auto text-muted" role="status">
         Account temporarily unavailable.
       </div>
     );
@@ -23,7 +23,10 @@ export async function AccountNavigation() {
   if (!user) {
     return (
       <div className="ml-auto">
-        <Link href="/login" className="hover:underline">
+        <Link
+          href="/login"
+          className="inline-flex min-h-11 items-center rounded-full border border-line px-5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted"
+        >
           Sign in
         </Link>
       </div>
@@ -31,8 +34,20 @@ export async function AccountNavigation() {
   }
 
   return (
-    <div className="ml-auto flex flex-wrap items-center gap-4">
-      <span className="text-zinc-600">{user.email}</span>
+    <div className="ml-auto flex max-w-full flex-wrap items-center gap-3">
+      <div className="flex min-w-0 items-center gap-2">
+        <span
+          aria-hidden="true"
+          className="flex size-8 shrink-0 items-center justify-center rounded-full bg-success-soft text-xs font-semibold text-success"
+        >
+          {user.email.charAt(0).toUpperCase()}
+        </span>
+
+        <span className="max-w-48 truncate text-sm text-muted">
+          {user.email}
+        </span>
+      </div>
+
       <LogoutControl action={logout} />
     </div>
   );

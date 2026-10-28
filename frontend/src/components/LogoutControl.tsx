@@ -17,13 +17,13 @@ export function LogoutControl({ action }: LogoutControlProps) {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg border border-zinc-300 px-3 py-1.5 hover:bg-zinc-100 disabled:opacity-50"
+        className="min-h-11 rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent-soft hover:text-accent disabled:cursor-not-allowed disabled:opacity-50"
       >
         {pending ? "Signing out…" : "Sign out"}
       </button>
 
       {state.error && (
-        <p role="alert" className="mt-2 text-sm text-red-700">
+        <p role="alert" className="mt-2 max-w-xs text-sm text-danger">
           {state.error}
         </p>
       )}

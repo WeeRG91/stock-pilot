@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { StockMovementForm } from "@/components/StockMovementForm";
 import { getProduct } from "@/lib/getProduct.server";
 import { recordStockIn } from "./action";
+import { FormPage } from "@/components/FormPage";
 
 export default async function StockInPage({
   params,
@@ -22,35 +22,24 @@ export default async function StockInPage({
   const recordStockInForProduct = recordStockIn.bind(null, product.id);
 
   return (
-    <main className="min-h-screen bg-zinc-50 px-6 py-12">
-      <div className="mx-auto max-w-2xl">
-        <Link
-          href={`/products/${product.id}`}
-          className="text-zinc-700 underline"
-        >
-          Back to product
-        </Link>
-
-        <h1 className="mt-6 text-3xl font-bold text-zinc-900">
-          Record stock in
-        </h1>
-
-        <p className="mt-3 text-zinc-700">
-          {product.name} — {product.sku}
+    <FormPage
+      title="Record stock in"
+      eyebrow="Receive inventory"
+      backHref={`/products/${product.id}`}
+      backLabel="Back to product"
+      description={`${product.name} — ${product.sku}`}
+    >
+      {product.active ? (
+        <StockMovementForm
+          key={product.id}
+          direction="in"
+          action={recordStockInForProduct}
+        />
+      ) : (
+        <p className="mt-6 rounded-2xl border border-line bg-surface p-5 text-sm leading-6 text-muted">
+          This product is inactive. Activate it before recording stock.
         </p>
-
-        {product.active ? (
-          <StockMovementForm
-            key={product.id}
-            direction="in"
-            action={recordStockInForProduct}
-          />
-        ) : (
-          <p className="mt-6 text-zinc-700">
-            This product is inactive. Activate it before recording stock.
-          </p>
-        )}
-      </div>
-    </main>
+      )}
+    </FormPage>
   );
 }

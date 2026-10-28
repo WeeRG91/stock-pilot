@@ -19,9 +19,9 @@ export function LoginForm({ action }: LoginFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="mt-6 space-y-5">
+    <form action={formAction} className="form-panel">
       {state.message && (
-        <p role="alert" className="text-red-700">
+        <p role="alert" className="form-feedback">
           {state.message}
         </p>
       )}
@@ -32,7 +32,7 @@ export function LoginForm({ action }: LoginFormProps) {
         <div>
           <label
             htmlFor="login-email"
-            className="block text-sm font-medium text-zinc-700"
+            className="form-label"
           >
             Email
           </label>
@@ -48,10 +48,10 @@ export function LoginForm({ action }: LoginFormProps) {
             aria-describedby={
               state.fieldErrors.email ? "login-email-error" : undefined
             }
-            className="mt-2 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900"
+            className="form-input"
           />
           {state.fieldErrors.email && (
-            <p id="login-email-error" className="mt-2 text-sm text-red-700">
+            <p id="login-email-error" className="mt-2 text-sm text-danger">
               {state.fieldErrors.email}
             </p>
           )}
@@ -60,7 +60,7 @@ export function LoginForm({ action }: LoginFormProps) {
         <div>
           <label
             htmlFor="login-password"
-            className="block text-sm font-medium text-zinc-700"
+            className="form-label"
           >
             Password
           </label>
@@ -74,10 +74,10 @@ export function LoginForm({ action }: LoginFormProps) {
             aria-describedby={
               state.fieldErrors.password ? "login-password-error" : undefined
             }
-            className="mt-2 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900"
+            className="form-input"
           />
           {state.fieldErrors.password && (
-            <p id="login-password-error" className="mt-2 text-sm text-red-700">
+            <p id="login-password-error" className="mt-2 text-sm text-danger">
               {state.fieldErrors.password}
             </p>
           )}
@@ -85,7 +85,7 @@ export function LoginForm({ action }: LoginFormProps) {
 
         <button
           type="submit"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-white disabled:opacity-50"
+          className="button-primary w-full"
         >
           {pending ? "Signing in…" : "Sign in"}
         </button>

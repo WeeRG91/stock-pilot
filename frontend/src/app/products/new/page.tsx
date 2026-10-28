@@ -1,26 +1,22 @@
 import { ProductForm } from "@/components/ProductForm";
-import Link from "next/link";
 import { createProduct } from "./action";
+import { FormPage } from "@/components/FormPage";
 
 export default function NewProductPage() {
   return (
-    <main className="min-h-screen bg-zinc-50 px-6 py-12">
-      <div className="mx-auto max-w-2xl">
-        <Link href="/products" className="text-zinc-700 underline">
-          Back to products
-        </Link>
-
-        <h1 className="mt-6 text-3xl font-bold text-zinc-900">
-          Create product
-        </h1>
-
-        <ProductForm 
-          action={createProduct}
-          initialValues={{name: "", sku: ""}}
-          submitLabel="Create product"
-          pendingLabel="Creating..."
-        />
-      </div>
-    </main>
+    <FormPage
+      title="Create product"
+      eyebrow="Grow your catalog"
+      backHref="/products"
+      backLabel="Back to products"
+      description="Add the essentials. You can record stock once the product is created."
+    >
+      <ProductForm
+        action={createProduct}
+        initialValues={{ name: "", sku: "" }}
+        submitLabel="Create product"
+        pendingLabel="Creating..."
+      />
+    </FormPage>
   );
 }
