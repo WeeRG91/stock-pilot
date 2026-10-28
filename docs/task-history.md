@@ -1563,3 +1563,39 @@ Assistant reviewed the access rules, entry point, and tests.
 - Inventory mutation CSRF enforcement remains pending.
 - Frontend session forwarding remains pending; protected page fetches
   currently receive 401 until that integration is implemented.
+
+## Task 51 — CSRF Protection for Inventory Mutations
+
+### Completed
+
+- Added an automatically registered kernel.controller subscriber.
+- Required a session-bound api CSRF token for unsafe API requests.
+- Returned uncached JSON 403 responses for invalid tokens.
+- Preserved separate login and logout CSRF handling.
+- Added eight subscriber tests.
+
+### Verification
+
+Outputs reviewed:
+
+- Subscriber registration appeared in the event dispatcher.
+- Subscriber tests passed: eight tests, 23 assertions.
+- Full backend suite passed: 89 tests, 270 assertions.
+- Authenticated mutation without a token returned 403.
+- A token for the wrong intent returned 403.
+- A valid api token allowed malformed JSON to reach controller
+  validation and return 400.
+- Logout continued returning 200.
+- Anonymous access tests continued passing.
+
+Learner reported final container and cache checks passed
+by proceeding without errors.
+Assistant reviewed the subscriber and tests.
+
+### Decisions and limitations
+
+- Firewall authentication checks run before mutation CSRF validation.
+- Safe methods, non-API routes, and subrequests are skipped.
+- Login and logout retain their own token intents.
+- The live check used malformed JSON without creating a product.
+- Frontend session and CSRF forwarding remain pending.
