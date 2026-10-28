@@ -1883,3 +1883,42 @@ Assistant reviewed the implementation, configuration, and tests.
 - Runtime logs remain ignored by Git.
 - Delivery remains best effort; the commit-to-publication crash window remains.
 - Browser subscription authorization and live refresh remain pending.
+
+## Task 59 — Private Mercure Subscription Authorization
+
+### Completed
+
+- Added a protected POST subscription-authorization endpoint.
+- Reused session authentication and api CSRF enforcement.
+- Issued 60-second, subscribe-only inventory credentials.
+- Scoped the HttpOnly subscriber cookie to the hub path.
+- Returned uncached subscription metadata without exposing the token in JSON.
+- Added anonymous access coverage and token/cookie tests.
+
+### Verification
+
+Outputs reviewed:
+
+- API access tests passed: 14 tests, 84 assertions.
+- Authorization controller tests passed: two tests, 26 assertions.
+- Authenticated authorization without CSRF returned 403.
+- Valid authorization returned 200.
+- The live hub accepted the subscriber credential with HTTP 200
+  and Content-Type text/event-stream.
+- PowerShell initially failed to retain the hub-path cookie.
+  Manually adding the returned cookie to the diagnostic client resolved it.
+
+Learner reported final suite, container, and cache checks passed
+by proceeding without errors.
+Expected backend suite: 106 tests, 365 assertions.
+Assistant reviewed the endpoint, configuration, and tests.
+
+### Decisions and limitations
+
+- All current ROLE_USER accounts can subscribe to shared inventory updates.
+- Tests inspect token claims; live hub acceptance verifies compatibility.
+- No publisher permission or wildcard topic is issued to subscribers.
+- Browser cookie forwarding and automatic renewal remain pending.
+- Existing subscriber credentials are not immediately revoked by logout;
+  their remaining lifetime is at most 60 seconds.
+- Local HTTP cookie settings require review before production HTTPS.

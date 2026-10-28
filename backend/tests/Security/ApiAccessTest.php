@@ -49,5 +49,9 @@ final class ApiAccessTest extends WebTestCase
             'PUT',
             '/api/products/1/low-stock-threshold',
         ];
+        yield 'realtime subscription authorization' => [
+            'POST',
+            '/api/realtime/authorize',
+        ];
     }
 }

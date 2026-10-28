@@ -4,6 +4,7 @@ mercure:
             url: '%env(MERCURE_URL)%'
             public_url: '%env(MERCURE_PUBLIC_URL)%'
             protocol_version: '1.0'
+            cookie_name: mercure_access_token
             http_client: mercure.publisher.client
             jwt:
                 secret: '%env(MERCURE_JWT_SECRET)%'

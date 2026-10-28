@@ -76,3 +76,16 @@ Normal page loads and reconnection refreshes retrieve current data.
 - Publication is limited to two seconds, with redirects and retries disabled.
 - Publication failures are contained and logged to var/log/inventory.log.
 - The log directory must exist and be writable.
+
+## Implemented subscription authorization
+
+- POST /api/realtime/authorize requires ROLE_USER and an api CSRF token.
+- Credentials grant subscribe-only access to urn:stockpilot:inventory.
+- Tokens identify the authenticated user and expire after 60 seconds.
+- The subscriber token is returned in an HttpOnly, SameSite=Strict cookie
+  scoped to /.well-known/mercure, never in the JSON body.
+- Local HTTP uses the prefix-less mercure_access_token cookie name.
+- JSON contains only the hub URL, topic, and expiration.
+- Next.js cookie forwarding, renewal, and connection cleanup remain pending.
+- Logout does not immediately revoke an already issued subscriber token;
+  its remaining validity is bounded by its expiration.
