@@ -20,13 +20,24 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
-final class ApiLoginAuthenticator extends AbstractAuthenticator
+final class ApiLoginAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     public function supports(Request $request): ?bool
     {
         return $request->isMethod('POST')
             && $request->attributes->get('_route') === 'api_auth_login';
+    }
+
+    #[Override]
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
+    {
+        return new JsonResponse(
+            ['error' => ['message' => 'Authentication required.']],
+            Response::HTTP_UNAUTHORIZED,
+            ['Cache-Control' => 'no-store, private'],
+        );
     }
 
     public function authenticate(Request $request): Passport

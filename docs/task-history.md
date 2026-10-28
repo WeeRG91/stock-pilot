@@ -1528,3 +1528,38 @@ Assistant reviewed the implementation and test diff.
 - Authenticated logout was verified manually against the local database.
 - Automated database authentication tests remain deferred.
 - Inventory endpoint protection and frontend authentication remain pending.
+
+## Task 50 — Protect Inventory API Access
+
+### Completed
+
+- Added a JSON authentication entry point returning uncached 401 responses.
+- Required ROLE_USER for API routes by default.
+- Kept health, login, and supported CSRF bootstrap endpoints public.
+- Added anonymous access tests for 13 inventory endpoints.
+
+### Verification
+
+Outputs reviewed:
+
+- Access tests passed: 13 tests, 78 assertions.
+- Full backend suite passed: 81 tests, 247 assertions.
+- Anonymous products and dashboard requests returned JSON 401.
+- Public health endpoint returned 200.
+- Authenticated products and dashboard requests returned 200.
+- Logout returned 200.
+- Products requested by the same client after logout returned 401.
+
+Learner reported remaining container and cache checks passed
+by proceeding without errors.
+Assistant reviewed the access rules, entry point, and tests.
+
+### Decisions and limitations
+
+- Access-control rules use first-match ordering.
+- Initial authenticated users share ROLE_USER inventory access.
+- Authenticated access was checked manually against the local database.
+- Automated database authentication tests remain deferred.
+- Inventory mutation CSRF enforcement remains pending.
+- Frontend session forwarding remains pending; protected page fetches
+  currently receive 401 until that integration is implemented.
