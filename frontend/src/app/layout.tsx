@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import { Suspense } from "react";
+import { AccountNavigation } from "@/components/AccountNavigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +38,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link href="/products" className="hover:underline">
               Products
             </Link>
+
+            <Suspense
+              fallback={
+                <span className="ml-auto text-zinc-500" role="status">
+                  Loading account…
+                </span>
+              }
+            >
+              <AccountNavigation />
+            </Suspense>
           </nav>
         </header>
 

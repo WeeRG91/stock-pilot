@@ -1684,3 +1684,40 @@ mutation action test files at the learner's request.
 - Existing business validation and response checks remain in place.
 - Threshold mutation authentication was checked manually.
 - Frontend logout and navigation session handling remain pending.
+
+## Task 54 — Frontend Logout and Account Navigation
+
+### Completed
+
+- Added current-account lookup through Symfony's /api/auth/me endpoint.
+- Displayed the confirmed account email or a Sign in link.
+- Added account-loading feedback through Suspense.
+- Added a Sign out control with pending and error states.
+- Implemented session-bound logout CSRF bootstrap and submission.
+- Deleted the frontend session cookie after backend logout or HTTP 401.
+- Added account lookup, logout action, and control tests.
+
+### Verification
+
+Outputs reviewed:
+
+- Current-account helper: six tests passed.
+- Logout action: six tests passed.
+- Logout control: two tests passed without warnings.
+
+Learner confirmed browser login, account display, logout,
+and protected-page redirection worked.
+Learner reported final frontend tests, lint, TypeScript, and build
+passed by proceeding without errors.
+Assistant reviewed the implementation and tests.
+Assistant corrected the control test's act import at the learner's request.
+
+### Decisions and limitations
+
+- Symfony confirms account identity; cookie presence alone is insufficient.
+- Logout uses the logout CSRF intent and the current session.
+- Failed or unconfirmed logout preserves the browser cookie.
+- Successful logout removes the frontend cookie and redirects to login.
+- Account requests are uncached and reject redirects.
+- Broader authentication integration review remains pending.
+- Real-time inventory integration is planned afterward.
