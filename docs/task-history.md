@@ -1847,3 +1847,39 @@ Assistant reviewed the configuration, command, tests, and startup notes.
 - Inventory mutations do not yet publish events.
 - Post-commit delivery is initially planned as best effort.
 - Reliable delivery through a transactional outbox is deferred.
+
+## Task 58 — Publish Stock Notifications After Commit
+
+### Completed
+
+- Added a private inventory update publisher with stable movement event IDs.
+- Connected stock-in and stock-out publication after transaction completion.
+- Added a guard against recording inside an existing transaction.
+- Contained publication failures without rejecting committed movements.
+- Configured a two-second publication limit with no redirects or retries.
+- Added a dedicated warning-level inventory log.
+- Added publisher and recorder coordination tests.
+
+### Verification
+
+Outputs reviewed:
+
+- Publisher tests passed: two tests, 11 assertions.
+- Recorder tests passed: 10 tests, 44 assertions.
+- Full backend suite passed: 103 tests, 333 assertions.
+- Hub outage produced the expected publication warning in inventory.log.
+
+Learner reported the requested browser outage checks and final
+publication, suite, container, and cache checks passed by proceeding
+without errors.
+Assistant reviewed the implementation, configuration, and tests.
+
+### Decisions and limitations
+
+- Tests model transaction-wrapper completion without a test database.
+- The recorder owns its transaction; nested transactions are rejected.
+- Failed publication does not trigger an automatic mutation retry.
+- Logging excludes credentials and internal exception details.
+- Runtime logs remain ignored by Git.
+- Delivery remains best effort; the commit-to-publication crash window remains.
+- Browser subscription authorization and live refresh remain pending.

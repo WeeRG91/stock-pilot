@@ -16,6 +16,15 @@ framework:
     #esi: true
     #fragments: true
 
+    http_client:
+        scoped_clients:
+            mercure.publisher.client:
+                base_uri: '%env(MERCURE_URL)%'
+                timeout: 2
+                max_duration: 2
+                max_redirects: 0
+                retry_failed: false
+
 when@test:
     framework:
         test: true

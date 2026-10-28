@@ -62,3 +62,17 @@ Normal page loads and reconnection refreshes retrieve current data.
 - Verify rejected movements produce no notification.
 - Verify hub downtime does not roll back committed inventory.
 - Verify recovery, duplicate events, and logout behavior.
+
+## Implemented stock notifications
+
+- Topic: urn:stockpilot:inventory.
+- Updates are private.
+- Payload contains type inventory.changed, productId, and movementId.
+- Event ID is urn:stockpilot:movement:{movementId}.
+- Both stock-in and stock-out publish after wrapInTransaction returns.
+- The recorder rejects an existing transaction to ensure it owns
+  the actual commit boundary.
+- Missing products and failed transactions do not publish.
+- Publication is limited to two seconds, with redirects and retries disabled.
+- Publication failures are contained and logged to var/log/inventory.log.
+- The log directory must exist and be writable.

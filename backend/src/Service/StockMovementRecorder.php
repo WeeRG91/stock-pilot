@@ -9,19 +9,27 @@ use App\Entity\StockMovement;
 use App\Repository\StockMovementRepository;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
+use LogicException;
 
 final class StockMovementRecorder
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly StockMovementRepository $movementRepository,
+        private readonly InventoryUpdatePublisher $updatePublisher,
     ) {}
 
     public function recordStockIn(
         int $productId,
         int $quantity,
     ): ?StockMovement {
-        return $this->entityManager->wrapInTransaction(
+        if ($this->entityManager->getConnection()->isTransactionActive()) {
+            throw new LogicException(
+                'Stock recording must start outside an existing transaction.',
+            );
+        }
+
+        $movement = $this->entityManager->wrapInTransaction(
             function () use ($productId, $quantity): ?StockMovement {
                 $product = $this->entityManager->find(
                     Product::class,
@@ -48,13 +56,27 @@ final class StockMovementRecorder
                 return $movement;
             }
         );
+
+        $movementId = $movement?->getId();
+
+        if ($movementId !== null) {
+            $this->updatePublisher->publishMovement($productId, $movementId);
+        }
+
+        return $movement;
     }
 
     public function recordStockOut(
         int $productId,
         int $quantity,
     ): ?StockMovement {
-        return $this->entityManager->wrapInTransaction(
+        if ($this->entityManager->getConnection()->isTransactionActive()) {
+            throw new LogicException(
+                'Stock recording must start outside an existing transaction.',
+            );
+        }
+
+        $movement = $this->entityManager->wrapInTransaction(
             function () use ($productId, $quantity): ?StockMovement {
                 $product = $this->entityManager->find(
                     Product::class,
@@ -85,5 +107,13 @@ final class StockMovementRecorder
                 return $movement;
             },
         );
+        
+        $movementId = $movement?->getId();
+
+        if ($movementId !== null) {
+            $this->updatePublisher->publishMovement($productId, $movementId);
+        }
+
+        return $movement;
     }
 }

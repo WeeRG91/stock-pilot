@@ -24,5 +24,15 @@ services:
         arguments:
             $applicationName: '%app.name%'
 
+    app.inventory_logger:
+        class: Symfony\Component\HttpKernel\Log\Logger
+        arguments:
+            $minLevel: 'warning'
+            $output: '%kernel.logs_dir%/inventory.log'
+
+    App\Service\InventoryUpdatePublisher:
+        arguments:
+            $logger: '@app.inventory_logger'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
