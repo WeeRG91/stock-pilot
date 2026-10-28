@@ -4,6 +4,7 @@ import { LogoutControl } from "./LogoutControl";
 import { logout } from "@/app/logout-action";
 import { AuthUser } from "@/types/auth";
 import { unstable_rethrow } from "next/navigation";
+import { InventoryRealtime } from "./InventoryRealtime";
 
 export async function AccountNavigation() {
   let user: AuthUser | null;
@@ -35,6 +36,7 @@ export async function AccountNavigation() {
 
   return (
     <div className="ml-auto flex max-w-full flex-wrap items-center gap-3">
+      <InventoryRealtime />
       <div className="flex min-w-0 items-center gap-2">
         <span
           aria-hidden="true"

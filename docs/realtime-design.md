@@ -86,6 +86,15 @@ Normal page loads and reconnection refreshes retrieve current data.
   scoped to /.well-known/mercure, never in the JSON body.
 - Local HTTP uses the prefix-less mercure_access_token cookie name.
 - JSON contains only the hub URL, topic, and expiration.
-- Next.js cookie forwarding, renewal, and connection cleanup remain pending.
+- Next.js forwards the subscriber cookie through its authorization endpoint.
+- Browser subscriptions use the protocol 1.0 match query parameter.
+- Credentials renew approximately 15 seconds before expiration.
+- Connection failures retry authorization after five seconds.
+- Connections and pending timers are cleaned up on component unmount.
+- Inventory events are grouped into refreshes with a 250 ms delay.
+- Connection and reconnection trigger a refresh of current API data.
+- Local frontend configuration requires
+  STOCKPILOT_FRONTEND_ORIGIN=http://127.0.0.1:3000
+  in frontend/.env.local.
 - Logout does not immediately revoke an already issued subscriber token;
   its remaining validity is bounded by its expiration.

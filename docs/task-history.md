@@ -1922,3 +1922,43 @@ Assistant reviewed the endpoint, configuration, and tests.
 - Existing subscriber credentials are not immediately revoked by logout;
   their remaining lifetime is at most 60 seconds.
 - Local HTTP cookie settings require review before production HTTPS.
+
+## Task 60 — Next.js Mercure Subscription and Inventory Refresh
+
+### Completed
+
+- Added a same-origin Next.js subscription-authorization endpoint.
+- Reused Symfony session authentication and API CSRF protection.
+- Forwarded only the HttpOnly Mercure subscriber cookie.
+- Validated subscription metadata and the hub hostname.
+- Configured the public frontend origin through STOCKPILOT_FRONTEND_ORIGIN.
+- Connected authenticated browsers using protocol 1.0's match parameter.
+- Grouped rapid inventory notifications into one route refresh.
+- Refreshed current data when the stream connects or reconnects.
+- Renewed credentials before expiration.
+- Added delayed retries after connection or authorization-service failures.
+- Stopped retries when authorization returns 401 or 403.
+- Closed streams and cleared timers when the component unmounts.
+- Added eight subscription tests and eight authorization-route tests.
+
+### Verification
+
+- Full frontend suite passed: 39 files, 379 tests.
+- Browser received private diagnostic and inventory events.
+- Product detail stock and movement history refreshed automatically.
+- Dashboard inventory data refreshed automatically.
+- Updates continued beyond the original 60-second credential lifetime.
+- Stock movements saved during hub downtime.
+- Dashboard caught up automatically after the hub restarted.
+- No Mercure stream remained visible after signing out in the same tab.
+
+### Decisions and limitations
+
+- Symfony APIs remain the source of inventory data.
+- Notifications trigger data refreshes rather than local stock calculations.
+- Local frontend and hub use the same 127.0.0.1 hostname.
+- Public frontend origin is configured explicitly because Next.js may
+  represent the internal request URL using localhost.
+- Publication remains best effort; a transactional outbox is deferred.
+- Logout does not immediately revoke already issued subscriber credentials.
+- Production HTTPS and cookie configuration require separate review.

@@ -15,6 +15,10 @@ vi.mock("next/navigation", () => ({
   unstable_rethrow: vi.fn(),
 }));
 
+vi.mock("./InventoryRealtime", () => ({
+  InventoryRealtime: () => null,
+}));
+
 beforeEach(() => {
   vi.clearAllMocks();
 });
