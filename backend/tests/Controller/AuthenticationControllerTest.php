@@ -45,4 +45,19 @@ final class AuthenticationControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(401);
     }
+
+    public function testAnonymousUserCannotLogOut(): void
+    {
+        $client = self::createClient();
+        $client->request('POST', '/api/auth/logout');
+
+        self::assertResponseStatusCodeSame(401);
+        self::assertJsonStringEqualsJsonString(
+            '{"error":{"message":"Authentication required."}}',
+            $client->getResponse()->getContent(),
+        );
+        self::assertTrue(
+            $client->getResponse()->headers->hasCacheControlDirective('no-store'),
+        );
+    }
 }

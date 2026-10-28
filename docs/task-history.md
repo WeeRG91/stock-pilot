@@ -1495,3 +1495,36 @@ Assistant reviewed the implementation and tests.
 - Automated database authentication tests remain deferred.
 - Inventory endpoints remain public at this stage.
 - Logout, mutation CSRF enforcement, and frontend login remain pending.
+
+## Task 49 — CSRF-Protected Session Logout
+
+### Completed
+
+- Configured Symfony logout handling with session invalidation.
+- Added POST /api/auth/logout.
+- Validated the X-CSRF-Token header against the logout intent.
+- Returned uncached JSON while preserving Symfony's logout response cookies.
+- Added an anonymous logout endpoint test.
+
+### Verification
+
+Outputs reviewed:
+
+- Authentication endpoint tests passed: three tests, 17 assertions.
+- Login returned 200.
+- Logout without CSRF returned 403.
+- Account access after rejected logout still returned 200.
+- Logout with a valid token returned 200 and "Logged out."
+- Account access using the same client afterward returned 401.
+
+Learner reported final checks passed by proceeding without errors.
+Expected full backend suite: 68 tests, 169 assertions.
+Assistant reviewed the implementation and test diff.
+
+### Decisions and limitations
+
+- Header CSRF validation happens before calling Security::logout().
+- Symfony handles clearing authentication and invalidating the session.
+- Authenticated logout was verified manually against the local database.
+- Automated database authentication tests remain deferred.
+- Inventory endpoint protection and frontend authentication remain pending.
