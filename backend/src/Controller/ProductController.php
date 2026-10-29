@@ -95,6 +95,11 @@ final class ProductController
             $limit,
         );
 
+        $lowStockIds = array_fill_keys(
+            array_column($this->productRepository->findLowStockProducts(), 'id'),
+            true,
+        );
+
         $data = [];
 
         foreach ($result['items'] as $product) {
@@ -103,6 +108,7 @@ final class ProductController
                 'name' => $product->getName(),
                 'sku' => $product->getSku(),
                 'active' => $product->isActive(),
+                'lowStock' => isset($lowStockIds[$product->getId()]),
             ];
         }
 

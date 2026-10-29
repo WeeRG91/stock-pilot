@@ -17,7 +17,10 @@ export type StockMovement = Omit<StockInMovement, "type"> & {
 export type MovementHistoryResponse = {
   data: StockMovement[];
   meta: {
+    page: number;
     limit: number;
+    total: number;
+    totalPages: number;
   };
 };
 

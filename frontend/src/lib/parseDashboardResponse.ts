@@ -1,4 +1,8 @@
-import type { DashboardMovement, DashboardResponse } from "@/types/dashboard";
+import type {
+  DashboardMovement,
+  DashboardResponse,
+  LowStockProduct,
+} from "@/types/dashboard";
 import { isStockMovement } from "./isStockMovement";
 
 function isNonnegativeInteger(value: unknown): value is number {
@@ -15,9 +19,27 @@ function isDashboardMovement(value: unknown): value is DashboardMovement {
   );
 }
 
-export function parseDashboardResponse(
-  payload: unknown,
-): DashboardResponse {
+function isLowStockProduct(value: unknown): value is LowStockProduct {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    "id" in value &&
+    isNonnegativeInteger(value.id) &&
+    value.id > 0 &&
+    "name" in value &&
+    typeof value.name === "string" &&
+    "sku" in value &&
+    typeof value.sku === "string" &&
+    "quantity" in value &&
+    isNonnegativeInteger(value.quantity) &&
+    "threshold" in value &&
+    isNonnegativeInteger(value.threshold) &&
+    value.quantity <= value.threshold
+  );
+}
+
+export function parseDashboardResponse(payload: unknown): DashboardResponse {
   if (
     typeof payload !== "object" ||
     payload === null ||
@@ -38,6 +60,7 @@ export function parseDashboardResponse(
     !("products" in data) ||
     !("stock" in data) ||
     !("recentMovements" in data) ||
+    !("lowStockProducts" in data) ||
     typeof meta !== "object" ||
     meta === null ||
     Array.isArray(meta) ||
@@ -50,6 +73,7 @@ export function parseDashboardResponse(
   const products = data.products;
   const stock = data.stock;
   const movements = data.recentMovements;
+  const lowStockProducts = data.lowStockProducts;
 
   if (
     typeof products !== "object" ||
@@ -70,6 +94,9 @@ export function parseDashboardResponse(
     Array.isArray(stock) ||
     !("totalUnits" in stock) ||
     !isNonnegativeInteger(stock.totalUnits) ||
+    !Array.isArray(lowStockProducts) ||
+    !lowStockProducts.every(isLowStockProduct) ||
+    lowStockProducts.length !== products.lowStock ||
     !Array.isArray(movements) ||
     !movements.every(isDashboardMovement) ||
     movements.length > meta.recentMovementsLimit
@@ -89,6 +116,7 @@ export function parseDashboardResponse(
         totalUnits: stock.totalUnits,
       },
       recentMovements: movements,
+      lowStockProducts,
     },
     meta: {
       recentMovementsLimit: meta.recentMovementsLimit,

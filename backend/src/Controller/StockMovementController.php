@@ -154,7 +154,7 @@ final class StockMovementController
         requirements: ['id' => '\d+'],
         methods: ['GET'],
     )]
-    public function movements(int $id): JsonResponse
+    public function movements(Request $request, int $id): JsonResponse
     {
         $product = $this->productRepository->find($id);
 
@@ -165,12 +165,54 @@ final class StockMovementController
             );
         }
 
-        $movements = $this->stockMovementRepository
-            ->findRecentForProduct($product);
+        $query = $request->query->all();
+        $pageValue = $query['page'] ?? '1';
+        $limitValue = $query['limit'] ?? '20';
+
+        if (!is_string($pageValue) || !is_string($limitValue)) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Page and limit must be integer strings.']],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $page = filter_var(
+            $pageValue,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1]],
+        );
+
+        $limit = filter_var(
+            $limitValue,
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 1, 'max_range' => 100]],
+        );
+
+        if ($page === false || $limit === false) {
+            return new JsonResponse(
+                ['error' => [
+                    'message' => 'Page must be positive and limit must be between 1 and 100.',
+                ]],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        if ($page - 1 > intdiv(PHP_INT_MAX, $limit)) {
+            return new JsonResponse(
+                ['error' => ['message' => 'Requested page is too large.']],
+                Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $result = $this->stockMovementRepository->findForProduct(
+            $product,
+            $page,
+            $limit,
+        );
 
         $data = [];
 
-        foreach ($movements as $movement) {
+        foreach ($result['items'] as $movement) {
             $data[] = [
                 'id' => $movement->getId(),
                 'productId' => $product->getId(),
@@ -183,7 +225,10 @@ final class StockMovementController
         return new JsonResponse([
             'data' => $data,
             'meta' => [
-                'limit' => 20,
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $result['total'],
+                'totalPages' => (int) ceil($result['total'] / $limit),
             ],
         ]);
     }

@@ -1,6 +1,12 @@
 import type { MovementHistoryResponse } from "@/types/stockMovement";
 import { isStockMovement } from "./isStockMovement";
 
+function isIntegerAtLeast(value: unknown, minimum: number): value is number {
+  return (
+    typeof value === "number" && Number.isSafeInteger(value) && value >= minimum
+  );
+}
+
 export function parseMovementHistoryResponse(
   payload: unknown,
 ): MovementHistoryResponse {
@@ -22,15 +28,29 @@ export function parseMovementHistoryResponse(
     typeof meta !== "object" ||
     meta === null ||
     Array.isArray(meta) ||
+    !("page" in meta) ||
+    !isIntegerAtLeast(meta.page, 1) ||
     !("limit" in meta) ||
-    meta.limit !== 20 ||
-    payload.data.length > meta.limit
+    !isIntegerAtLeast(meta.limit, 1) ||
+    meta.limit > 100 ||
+    !("total" in meta) ||
+    !isIntegerAtLeast(meta.total, 0) ||
+    !("totalPages" in meta) ||
+    !isIntegerAtLeast(meta.totalPages, 0) ||
+    meta.totalPages !== Math.ceil(meta.total / meta.limit) ||
+    payload.data.length > meta.limit ||
+    payload.data.length > meta.total
   ) {
     throw new Error("Invalid movement history response.");
   }
 
   return {
     data: payload.data,
-    meta: { limit: meta.limit },
+    meta: {
+      page: meta.page,
+      limit: meta.limit,
+      total: meta.total,
+      totalPages: meta.totalPages,
+    },
   };
 }

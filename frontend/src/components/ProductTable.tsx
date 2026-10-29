@@ -1,8 +1,8 @@
 import Link from "next/link";
-import type { Product } from "@/types/product";
+import type { ProductListItem } from "@/types/product";
 
 type ProductTableProps = {
-  products: Product[];
+  products: ProductListItem[];
 };
 
 export function ProductTable({ products }: ProductTableProps) {
@@ -51,7 +51,11 @@ export function ProductTable({ products }: ProductTableProps) {
                 <td className="px-6 py-5">
                   <Link
                     href={`/products/${product.id}`}
-                    className="font-medium text-foreground underline-offset-4 hover:text-accent hover:underline"
+                    className={`font-medium underline-offset-4 hover:underline ${
+                      product.lowStock
+                        ? "text-danger"
+                        : "text-foreground hover:text-accent"
+                    }`}
                   >
                     {product.name}
                   </Link>

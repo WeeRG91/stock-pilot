@@ -68,12 +68,62 @@ final class ProductRepository extends ServiceEntityRepository
           ) <= product.low_stock_threshold
         SQL;
 
-    return (int) $this->getEntityManager()
-        ->getConnection()
-        ->fetchOne(
-            $sql,
-            ['stockIn' => StockMovementType::In->value],
-        );
+        return (int) $this->getEntityManager()
+            ->getConnection()
+            ->fetchOne(
+                $sql,
+                ['stockIn' => StockMovementType::In->value],
+            );
+    }
+
+    public function findLowStockProducts(): array
+    {
+        $sql = <<<'SQL'
+        SELECT
+            product.id,
+            product.name,
+            product.sku,
+            product.low_stock_threshold AS threshold,
+            COALESCE(SUM(
+                CASE
+                    WHEN movement.type = :stockIn
+                    THEN movement.quantity
+                    ELSE -movement.quantity
+                END
+            ), 0) AS quantity
+        FROM products product
+        LEFT JOIN stock_movements movement
+            ON movement.product_id = product.id
+        WHERE product.active = TRUE
+        GROUP BY
+            product.id,
+            product.name,
+            product.sku,
+            product.low_stock_threshold
+        HAVING COALESCE(SUM(
+            CASE
+                WHEN movement.type = :stockIn
+                THEN movement.quantity
+                ELSE -movement.quantity
+            END
+        ), 0) <= product.low_stock_threshold
+        ORDER BY quantity ASC, product.name ASC, product.id ASC
+        SQL;
+
+        $rows = $this->getEntityManager()
+            ->getConnection()
+            ->fetchAllAssociative(
+                $sql,
+                ['stockIn' => StockMovementType::In->value],
+            );
+
+        return array_map(static fn(array $row): array => [
+            'id' => (int) $row['id'],
+            'name' => $row['name'],
+            'sku' => $row['sku'],
+            'quantity' => (int) $row['quantity'],
+            'threshold' => (int) $row['threshold'],
+        ], $rows);
     }
 
     /**

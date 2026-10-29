@@ -18,18 +18,46 @@ final class StockMovementRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<StockMovement>
+     * @return array{items: list<StockMovement>, total: int}
      */
-    public function findRecentForProduct(Product $product): array
-    {
-        return $this->createQueryBuilder('movement')
+    public function findForProduct(
+        Product $product,
+        int $page = 1,
+        int $limit = 20,
+    ): array {
+        if ($page < 1 || $limit < 1 || $limit > 100) {
+            throw new \InvalidArgumentException(
+                'Page must be positive and limit must be between 1 and 100.',
+            );
+        }
+
+        if ($page - 1 > intdiv(PHP_INT_MAX, $limit)) {
+            throw new \InvalidArgumentException('Requested page is too large.');
+        }
+
+        $queryBuilder = $this->createQueryBuilder('movement')
             ->andWhere('movement.product = :product')
-            ->setParameter('product', $product)
+            ->setParameter('product', $product);
+
+        $countQueryBuilder = clone $queryBuilder;
+
+        $total = (int) $countQueryBuilder
+            ->select('COUNT(movement.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $items = $queryBuilder
             ->orderBy('movement.createdAt', 'DESC')
             ->addOrderBy('movement.id', 'DESC')
-            ->setMaxResults(20)
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+
+        return [
+            'items' => $items,
+            'total' => $total,
+        ];
     }
 
     /**

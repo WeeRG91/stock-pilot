@@ -1,11 +1,13 @@
-import { StockMovement } from "@/types/stockMovement";
+import type { MovementHistoryResponse } from "@/types/stockMovement";
 import { parseMovementHistoryResponse } from "./parseMovementHistoryResponse";
 import { getApiSessionHeaders } from "./getApiSessionHeaders.server";
 import { redirect } from "next/navigation";
 
 export async function getProductMovements(
   productId: number,
-): Promise<StockMovement[]> {
+  page = 1,
+  limit = 20,
+): Promise<MovementHistoryResponse> {
   const apiUrl = process.env.STOCKPILOT_API_URL;
 
   if (!apiUrl) {
@@ -13,16 +15,16 @@ export async function getProductMovements(
   }
 
   const headers = await getApiSessionHeaders();
+  const url = new URL(`/api/products/${productId}/movements`, apiUrl);
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("limit", String(limit));
 
-  const response = await fetch(
-    new URL(`/api/products/${productId}/movements`, apiUrl),
-    {
-      cache: "no-store",
-      redirect: "error",
-      headers,
-      signal: AbortSignal.timeout(10_000),
-    },
-  );
+  const response = await fetch(url, {
+    cache: "no-store",
+    redirect: "error",
+    headers,
+    signal: AbortSignal.timeout(10_000),
+  });
 
   if (response.status === 401) {
     redirect("/login");
@@ -39,5 +41,5 @@ export async function getProductMovements(
     throw new Error("Movement history contains a different product.");
   }
 
-  return result.data;
+  return result;
 }

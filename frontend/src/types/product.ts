@@ -5,8 +5,12 @@ export type Product = {
   active: boolean;
 };
 
+export type ProductListItem = Product & {
+  lowStock: boolean;
+}
+
 export type ProductListResponse = {
-  data: Product[];
+  data: ProductListItem[];
   meta: {
     page: number;
     limit: number;

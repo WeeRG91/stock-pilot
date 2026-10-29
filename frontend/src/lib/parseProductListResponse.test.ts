@@ -6,6 +6,7 @@ const product = {
   name: "Wireless Mouse",
   sku: "MOUSE-001",
   active: true,
+  lowStock: false,
 };
 
 const meta = {
@@ -19,6 +20,43 @@ test("accepts a valid product list", () => {
   const payload = { data: [product], meta };
 
   expect(parseProductListResponse(payload)).toEqual(payload);
+});
+
+test("accepts an active low-stock product", () => {
+  const payload = {
+    data: [{ ...product, lowStock: true }],
+    meta,
+  };
+
+  expect(parseProductListResponse(payload)).toEqual(payload);
+});
+
+test("accepts an inactive product without a low-stock warning", () => {
+  const payload = {
+    data: [{ ...product, active: false }],
+    meta,
+  };
+
+  expect(parseProductListResponse(payload)).toEqual(payload);
+});
+
+test.each([
+  { description: "a missing field", changes: { lowStock: undefined } },
+  { description: "a string value", changes: { lowStock: "true" } },
+  { description: "a null value", changes: { lowStock: null } },
+  {
+    description: "a warning on an inactive product",
+    changes: { active: false, lowStock: true },
+  },
+])("rejects low-stock data with $description", ({ changes }) => {
+  const payload = {
+    data: [{ ...product, ...changes }],
+    meta,
+  };
+
+  expect(() => parseProductListResponse(payload)).toThrow(
+    "Invalid product list data.",
+  );
 });
 
 test("accepts an empty product list", () => {

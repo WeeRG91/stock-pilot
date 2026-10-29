@@ -1,4 +1,4 @@
-import type { ProductListResponse } from "@/types/product";
+import type { ProductListItem, ProductListResponse } from "@/types/product";
 import { isProduct } from "./isProduct";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -13,6 +13,15 @@ function isIntegerAtLeast(value: unknown, minimum: number): value is number {
   );
 }
 
+function isProductListItem(value: unknown): value is ProductListItem {
+  return (
+    isProduct(value) &&
+    "lowStock" in value &&
+    typeof value.lowStock === "boolean" &&
+    (!value.lowStock || value.active)
+  );
+}
+
 export function parseProductListResponse(
   value: unknown,
 ): ProductListResponse {
@@ -23,7 +32,7 @@ export function parseProductListResponse(
   const data = value.data;
   const meta = value.meta;
 
-  if (!Array.isArray(data) || !data.every(isProduct)) {
+  if (!Array.isArray(data) || !data.every(isProductListItem)) {
     throw new Error("Invalid product list data.");
   }
 

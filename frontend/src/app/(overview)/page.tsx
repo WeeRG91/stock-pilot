@@ -57,7 +57,10 @@ export default async function Home() {
           />
         </div>
 
-        <LowStockSummary value={data.products.lowStock} />
+        <LowStockSummary
+          value={data.products.lowStock}
+          products={data.lowStockProducts}
+        />
         <DashboardMovements movements={data.recentMovements} />
       </div>
     </main>

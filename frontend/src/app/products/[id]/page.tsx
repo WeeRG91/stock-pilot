@@ -6,6 +6,7 @@ import { ProductActivationControl } from "@/components/ProductActivationControl"
 import { getProductStock } from "@/lib/getProductStock.server";
 import { getProductMovements } from "@/lib/getProductMovements.server";
 import { MovementHistory } from "@/components/MovementHistory";
+import { getLowStockThreshold } from "@/lib/getLowStockThreshold.server";
 
 export default async function ProductDetailsPage({
   params,
@@ -18,16 +19,47 @@ export default async function ProductDetailsPage({
     notFound();
   }
 
+  const pageValue = query.page ?? "1";
+  const limitValue = query.limit ?? "20";
+
+  if (
+    typeof pageValue !== "string" ||
+    typeof limitValue !== "string" ||
+    !/^[1-9]\d*$/.test(pageValue) ||
+    !/^[1-9]\d*$/.test(limitValue)
+  ) {
+    notFound();
+  }
+
+  const page = Number(pageValue);
+  const limit = Number(limitValue);
+
+  if (
+    !Number.isSafeInteger(page) ||
+    !Number.isSafeInteger(limit) ||
+    limit > 100 ||
+    !Number.isSafeInteger((page - 1) * limit)
+  ) {
+    notFound();
+  }
+
   const product = await getProduct(id);
 
   if (product === null) {
     notFound();
   }
 
-  const [currentStock, movements] = await Promise.all([
+  const [currentStock, movementHistory, threshold] = await Promise.all([
     getProductStock(product.id),
-    getProductMovements(product.id),
+    getProductMovements(product.id, page, limit),
+    getLowStockThreshold(product.id),
   ]);
+
+  if (threshold === null) {
+    notFound();
+  }
+
+  const isLowStock = product.active && currentStock <= threshold;
 
   const changeActivation = setProductActivation.bind(
     null,
@@ -58,15 +90,23 @@ export default async function ProductDetailsPage({
             <p className="mt-3 font-mono text-sm text-muted">{product.sku}</p>
           </div>
 
-          <span
-            className={`rounded-full px-4 py-2 text-xs font-medium ${
-              product.active
-                ? "bg-success-soft text-success"
-                : "bg-surface-muted text-muted"
-            }`}
-          >
-            {product.active ? "Active" : "Inactive"}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`rounded-full px-4 py-2 text-xs font-medium ${
+                product.active
+                  ? "bg-success-soft text-success"
+                  : "bg-surface-muted text-muted"
+              }`}
+            >
+              {product.active ? "Active" : "Inactive"}
+            </span>
+
+            {isLowStock && (
+              <span className="rounded-full bg-danger/10 px-4 py-2 text-xs font-medium text-danger">
+                {currentStock === 0 ? "Out of stock" : "Low stock"}
+              </span>
+            )}
+          </div>
         </div>
 
         {query.stockIn === "recorded" && (
@@ -192,7 +232,11 @@ export default async function ProductDetailsPage({
           </section>
         </div>
 
-        <MovementHistory movements={movements} />
+        <MovementHistory
+          productId={product.id}
+          movements={movementHistory.data}
+          meta={movementHistory.meta}
+        />
       </div>
     </main>
   );

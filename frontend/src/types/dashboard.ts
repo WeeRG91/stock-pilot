@@ -5,6 +5,14 @@ export type DashboardMovement = StockMovement & {
   productSku: string;
 };
 
+export type LowStockProduct = {
+  id: number;
+  name: string;
+  sku: string;
+  quantity: number;
+  threshold: number;
+};
+
 export type DashboardResponse = {
   data: {
     products: {
@@ -17,6 +25,7 @@ export type DashboardResponse = {
       totalUnits: number;
     };
     recentMovements: DashboardMovement[];
+    lowStockProducts: LowStockProduct[];
   };
   meta: {
     recentMovementsLimit: number;

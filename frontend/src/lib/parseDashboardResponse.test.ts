@@ -13,9 +13,14 @@ const movement = {
 
 const validResponse = {
   data: {
-    products: { total: 3, active: 3, inactive: 0, lowStock: 3},
+    products: { total: 3, active: 3, inactive: 0, lowStock: 3 },
     stock: { totalUnits: 3 },
     recentMovements: [movement],
+    lowStockProducts: [
+      { id: 1, name: "Keyboard", sku: "KEY-1", quantity: 0, threshold: 2 },
+      { id: 2, name: "Mouse", sku: "MOUSE-2", quantity: 1, threshold: 3 },
+      { id: 3, name: "Monitor", sku: "MON-3", quantity: 2, threshold: 2 },
+    ],
   },
   meta: { recentMovementsLimit: 5 },
 };
@@ -30,6 +35,7 @@ test("accepts an empty inventory", () => {
       products: { total: 0, active: 0, inactive: 0, lowStock: 0 },
       stock: { totalUnits: 0 },
       recentMovements: [],
+      lowStockProducts: [],
     },
     meta: { recentMovementsLimit: 5 },
   };
@@ -83,6 +89,7 @@ test.each([
         products: validResponse.data.products,
         totalUnits: 3,
         recentMovements: [],
+      lowStockProducts: [],
       },
       meta: validResponse.meta,
     },
@@ -152,4 +159,30 @@ test.each([
   expect(() => parseDashboardResponse(payload)).toThrow(
     "Invalid dashboard response.",
   );
+});
+test.each([
+  { description: "a missing list", list: undefined },
+  { description: "a non-array list", list: {} },
+  { description: "a count mismatch", list: [] },
+  ...[
+    null,
+    { id: 0 },
+    { name: undefined },
+    { sku: undefined },
+    { quantity: -1 },
+    { quantity: 0.5 },
+    { threshold: -1 },
+    { quantity: 3, threshold: 2 },
+  ].map((change, index) => ({
+    description: "invalid product " + index,
+    list: [
+      change === null ? null : { ...validResponse.data.lowStockProducts[0], ...change },
+      ...validResponse.data.lowStockProducts.slice(1),
+    ],
+  })),
+])("rejects low-stock products with $description", ({ list }) => {
+  expect(() => parseDashboardResponse({
+    ...validResponse,
+    data: { ...validResponse.data, lowStockProducts: list },
+  })).toThrow("Invalid dashboard response.");
 });

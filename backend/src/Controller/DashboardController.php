@@ -36,7 +36,8 @@ final class DashboardController
         }
 
         $productCounts = $this->productRepository->getDashboardCounts();
-        $productCounts['lowStock'] = $this->productRepository->countLowStockProducts();
+        $lowStockProducts = $this->productRepository->findLowStockProducts();
+        $productCounts['lowStock'] = count($lowStockProducts);
 
         return new JsonResponse([
             'data' => [
@@ -45,6 +46,7 @@ final class DashboardController
                     'totalUnits' => $this->movementRepository->getTotalStock(),
                 ],
                 'recentMovements' => $recentMovements,
+                'lowStockProducts' => $lowStockProducts,
             ],
             'meta' => [
                 'recentMovementsLimit' => 5,
