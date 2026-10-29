@@ -67,6 +67,10 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "mercure:start": [
+            "Composer\\Config::disableProcessTimeout",
+            "powershell -NoProfile -ExecutionPolicy RemoteSigned -File ../infrastructure/mercure/start.ps1"
         ]
     },
     "conflict": {
