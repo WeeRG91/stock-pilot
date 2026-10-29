@@ -184,4 +184,41 @@ final class ProductRepository extends ServiceEntityRepository
             'total' => $total,
         ];
     }
+
+    /**
+     * @return list<array{sku: string, name: string, stock: int}>
+     */
+    public function findInventoryExportRows(): array
+    {
+        $sql = <<<'SQL'
+        SELECT
+            product.sku,
+            product.name,
+            COALESCE(SUM(
+                CASE
+                    WHEN movement.type = :stockIn
+                    THEN movement.quantity
+                    ELSE -movement.quantity
+                END
+            ), 0) AS stock
+        FROM products product
+        LEFT JOIN stock_movements movement
+            ON movement.product_id = product.id
+        GROUP BY product.id, product.sku, product.name
+        ORDER BY product.id ASC
+        SQL;
+
+        $rows = $this->getEntityManager()
+            ->getConnection()
+            ->fetchAllAssociative(
+                $sql,
+                ['stockIn' => StockMovementType::In->value],
+            );
+
+        return array_map(static fn(array $row): array => [
+            'sku' => $row['sku'],
+            'name' => $row['name'],
+            'stock' => (int) $row['stock'],
+        ], $rows);
+    }
 }

@@ -1,3 +1,4 @@
+import { InventoryExportForm } from "@/components/InventoryExportForm";
 import { ProductTable } from "@/components/ProductTable";
 import { buildProductsHref } from "@/lib/buildProductsHref";
 import { getApiSessionHeaders } from "@/lib/getApiSessionHeaders.server";
@@ -95,14 +96,30 @@ export default async function ProductsPage({
             </p>
           </div>
 
-          <Link
-            href="/products/new"
-            className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-hover sm:self-auto"
-          >
-            <span aria-hidden="true">+</span>
-            Create product
-          </Link>
+          <div className="flex flex-wrap items-start gap-3">
+            <InventoryExportForm />
+
+            <Link
+              href="/inventory-exports"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-surface px-5 py-3 text-sm font-medium text-foreground transition-colors hover:bg-surface-muted"
+            >
+              Recent exports
+            </Link>
+
+            <Link
+              href="/products/new"
+              className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-hover sm:self-auto"
+            >
+              <span aria-hidden="true">+</span>
+              Create product
+            </Link>
+          </div>
         </div>
+
+        <p className="mt-4 text-xs text-muted">
+          CSV exports include all products and their current stock, regardless
+          of the filters below.
+        </p>
 
         <form
           key={JSON.stringify([search, active])}
